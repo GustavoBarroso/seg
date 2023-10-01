@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 void main() {
   runApp(LoginApp());
 }
@@ -28,7 +27,6 @@ class _TabNavigatorState extends State<TabNavigator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('SEG'), backgroundColor: Colors.blue),
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -38,9 +36,9 @@ class _TabNavigatorState extends State<TabNavigator> {
           });
         },
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: 'Login'),
+          BottomNavigationBarItem(icon: Icon(Icons.login, color: Colors.indigo),label: 'Login'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.person_add), label: 'Criar Conta'),
+              icon: Icon(Icons.person_add, color: Colors.indigo), label: 'Criar Conta'),
         ],
       ),
     );
@@ -49,6 +47,7 @@ class _TabNavigatorState extends State<TabNavigator> {
 
 class LoginScreen extends StatelessWidget {
   Color corPrincipal = Color(0xFF243D7E);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,7 +116,6 @@ class LoginScreen extends StatelessWidget {
   }
 }
 
-
 class SignupScreen extends StatefulWidget {
   @override
   _SignupScreenState createState() => _SignupScreenState();
@@ -126,10 +124,10 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   bool _passwordsMatch =
-  true; // Variável para verificar a correspondência das senhas
+      true; // Variável para verificar a correspondência das senhas
 
   @override
   void dispose() {
@@ -151,102 +149,119 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
+  Color corPrincipal = Color(0xFF243D7E);
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Crie sua conta',
-                style: TextStyle(
-                  fontSize: 24.0,
-                ),
-              ),
-              SizedBox(height: 20.0),
-              // Campo de Nome
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Nome',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 160,
+        elevation: 0.0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/background1.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      ),
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Crie sua conta',
+                  style: TextStyle(
+                    fontSize: 30.0,
+                    color: corPrincipal,
                   ),
                 ),
-              ),
-              SizedBox(height: 12.0),
-              // Campo de Email
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+                SizedBox(height: 20.0),
+                // Campo de Nome
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Nome',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 12.0),
-              // Campo de Nome de Usuário
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Nome de Usuário',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+                SizedBox(height: 12.0),
+                // Campo de Email
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(height: 12.0),
-              // Campo de Senha
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                    hintText: 'Senha',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
+                SizedBox(height: 12.0),
+                // Campo de Nome de Usuário
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Nome de Usuário',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  obscureText: true,
                 ),
-              ),
-              SizedBox(height: 12.0),
-              // Campo de Confirmar Senha
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: TextField(
-                  controller: _confirmPasswordController,
-                  decoration: InputDecoration(
-                    hintText: 'Confirmar Senha',
-                    filled: true,
-                    fillColor: Colors.grey[200],
-                    border: OutlineInputBorder(),
-                    errorText:
-                    !_passwordsMatch ? 'As senhas não coincidem' : null,
+                SizedBox(height: 12.0),
+                // Campo de Senha
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: _passwordController,
+                    decoration: InputDecoration(
+                      hintText: 'Senha',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                    ),
+                    obscureText: true,
                   ),
-                  obscureText: true,
                 ),
-              ),
-              SizedBox(height: 12.0),
-              ElevatedButton(
-                onPressed: _createAccount,
-                child: Text('Criar Conta'),
-                style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
-                  onPrimary: Colors.white,
+                SizedBox(height: 12.0),
+                // Campo de Confirmar Senha
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
+                    controller: _confirmPasswordController,
+                    decoration: InputDecoration(
+                      hintText: 'Confirmar Senha',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(),
+                      errorText:
+                          !_passwordsMatch ? 'As senhas não coincidem' : null,
+                    ),
+                    obscureText: true,
+                  ),
                 ),
-              ),
-            ],
+                SizedBox(height: 12.0),
+                ElevatedButton(
+                  onPressed: _createAccount,
+                  child: Text('Criar Conta'),
+                  style: ElevatedButton.styleFrom(
+                    primary: corPrincipal,
+                    onPrimary: Colors.white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
