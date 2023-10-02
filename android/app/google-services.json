@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "961059594481",
+    "project_id": "seg-tcc-f84ab",
+    "storage_bucket": "seg-tcc-f84ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961059594481:android:a4858c06fca4fb815c8950",
+        "android_client_info": {
+          "package_name": "com.example.seg"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQzz35W1o3voLEF58Nuui04OhfbqFqJaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
