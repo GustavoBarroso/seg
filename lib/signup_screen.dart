@@ -6,6 +6,9 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nameController =
+  TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
   TextEditingController();
@@ -69,6 +72,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
+                    controller: _nameController,
                     decoration: InputDecoration(
                       hintText: 'Nome',
                       filled: true,
@@ -82,6 +86,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       hintText: 'Email',
                       filled: true,
@@ -137,7 +142,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 SizedBox(height: 12.0),
                 ElevatedButton(
-                  onPressed: _createAccount,
+                  onPressed: () {
+                    enviarClicado();
+                  },
                   child: Text('Criar Conta'),
                   style: ElevatedButton.styleFrom(
                     primary: corPrincipal,
@@ -151,4 +158,10 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+}
+
+enviarClicado() {
+//  String email = _emailController.text;
+//  String nome = _nameController;
+//  String senha = _passwordController;
 }
