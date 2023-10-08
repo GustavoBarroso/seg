@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreen createState() => _LoginScreen();
 }
 
 class _LoginScreen extends State<LoginScreen> {
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+
+  bool isEntrando = true;
+  final _formKey = GlobalKey<FormState>();
 
   Color corPrincipal = Color(0xFF243D7E);
 
@@ -41,7 +45,19 @@ class _LoginScreen extends State<LoginScreen> {
               // Campo de Email
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
+                  child: TextFormField(
+                      controller: _emailController,
+                      validator: (value) {
+                        if (value == null || value == "") {
+                          return "O valor de e-mail deve ser preenchido";
+                        }
+                        if (!value.contains("@") ||
+                            !value.contains(".") ||
+                            value.length < 4) {
+                          return "O valor do e-mail deve ser válido";
+                        }
+                        return null;
+                      },
                       decoration: InputDecoration(
                           hintText: 'Email',
                           filled: true,
@@ -52,8 +68,15 @@ class _LoginScreen extends State<LoginScreen> {
               // Campo de Senha
               Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                      decoration: InputDecoration(
+                  child: TextFormField(
+                      controller: _senhaController,
+                      validator: (value) {
+                        if (value == null || value.length < 4) {
+                          return "Insira uma senha válida.";
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(
                           hintText: 'Senha',
                           filled: true,
                           fillColor: Colors.white,
