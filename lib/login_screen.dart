@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seg/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,7 +14,7 @@ class _LoginScreen extends State<LoginScreen> {
 
   bool isEntrando = true;
   final _formKey = GlobalKey<FormState>();
-
+  AuthService authService = AuthService();
   Color corPrincipal = Color(0xFF243D7E);
 
   @override
@@ -86,9 +87,9 @@ class _LoginScreen extends State<LoginScreen> {
 
               ElevatedButton(
                 onPressed: () {
-                  // Adicione aqui a lógica de autenticação
+                  entrarClicado();
                 },
-                child: Text('Entrar'),
+                child: Text((isEntrando) ? "Entrar" : "Entrar"),
                 style: ElevatedButton.styleFrom(
                   primary: corPrincipal,
                   onPrimary: Colors.white,
@@ -101,4 +102,22 @@ class _LoginScreen extends State<LoginScreen> {
       ),
     );
   }
+
+  entrarClicado() {
+    String email = _emailController.text;
+    String senha = _senhaController.text;
+
+    if (_formKey.currentState!.validate()) {
+      if (isEntrando) {
+        _entrarUsuario(email: email, senha: senha);
+      } else {
+        //_criarUsuario(email: email, senha: senha, nome: nome);
+      }
+    }
+  }
+
+  _entrarUsuario({required String email, required String senha}) {
+    authService.entrarUsuario(email: email, senha: senha);
+  }
+
 }

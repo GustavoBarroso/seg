@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:seg/services/auth_service.dart';
+
+AuthService authService = AuthService();
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -15,6 +18,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _passwordsMatch =
   true; // Variável para verificar a correspondência das senhas
+  bool isEntrando = true;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -96,19 +101,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 SizedBox(height: 12.0),
-                // Campo de Nome de Usuário
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Nome de Usuário',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 12.0),
                 // Campo de Senha
                 Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -145,7 +137,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: () {
                     enviarClicado();
                   },
-                  child: Text('Criar Conta'),
+                  child: Text((isEntrando) ? "Criar conta" : "Criar conta"),
                   style: ElevatedButton.styleFrom(
                     primary: corPrincipal,
                     onPrimary: Colors.white,
@@ -158,10 +150,26 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+  enviarClicado() {
+    String email = _emailController.text;
+    String nome = _nameController.text;
+    String senha = _confirmPasswordController.text;
+
+    if (_formKey.currentState!.validate()) {
+      if (isEntrando) {
+        _criarUsuario(email: email, senha: senha, nome: nome);
+      } else {
+        //_criarUsuario(email: email, senha: senha, nome: nome);
+      }
+    }
+  }
+
+
+
+  _criarUsuario(
+      {required String email, required String senha, required String nome}) {
+    authService.cadastrarUsuario(email: email, senha: senha, nome: nome);
+  }
+
 }
 
-enviarClicado() {
-//  String email = _emailController.text;
-//  String nome = _nameController;
-//  String senha = _passwordController;
-}
