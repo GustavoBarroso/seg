@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:seg/component/show_snackbar.dart';
 import 'package:seg/services/auth_service.dart';
 
 AuthService authService = AuthService();
@@ -10,35 +11,16 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _nameController =
-  TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
-
-  bool _passwordsMatch =
-  true; // Variável para verificar a correspondência das senhas
-  bool isEntrando = true;
-  final _formKey = GlobalKey<FormState>();
+      TextEditingController();
 
   @override
   void dispose() {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
-  }
-
-  void _createAccount() {
-    // Verifique se as senhas coincidem
-    if (_passwordController.text == _confirmPasswordController.text) {
-      // As senhas coincidem, você pode prosseguir com a criação da conta
-      // Adicione aqui a lógica de criação de conta
-    } else {
-      // As senhas não coincidem, exiba uma mensagem de erro
-      setState(() {
-        _passwordsMatch = false;
-      });
-    }
   }
 
   Color corPrincipal = Color(0xFF243D7E);
@@ -127,8 +109,6 @@ class _SignupScreenState extends State<SignupScreen> {
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(),
-                      errorText:
-                      !_passwordsMatch ? 'As senhas não coincidem' : null,
                     ),
                     obscureText: true,
                   ),
@@ -158,17 +138,27 @@ class _SignupScreenState extends State<SignupScreen> {
     String senha = _confirmPasswordController.text;
 
     _criarUsuario(email: email, senha: senha, nome: nome);
-
   }
 
-  _criarUsuario(
-      {required String email, required String senha, required String nome}) {
-    String email = _emailController.text;
-    String nome = _nameController.text;
-    String senha = _confirmPasswordController.text;
-
-    authService.cadastrarUsuario(email: email, senha: senha, nome: nome);
+  _criarUsuario({required String email, required String senha, required String nome}) {
+    if (_passwordController.text == _confirmPasswordController.text) {
+      String email = _emailController.text;
+      String nome = _nameController.text;
+      String senha = _confirmPasswordController.text;
+      authService
+          .cadastrarUsuario(email: email, senha: senha, nome: nome)
+          .then((String? erro) {
+        if (erro == null) {
+          showSnackBar(
+              context: context,
+              mensage: "Usuário cadastrado com sucesso.",
+              isError: false);
+        } else {
+          showSnackBar(context: context, mensage: erro);
+        }
+      });
+    } else {
+      showSnackBar(context: context, mensage: "As senhas não coincidem");
+    }
   }
-
 }
-
