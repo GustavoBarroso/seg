@@ -112,6 +112,9 @@ class _LoginScreen extends State<LoginScreen> {
   }
 
   _entrarUsuario({required String email, required String senha}) {
+    String email = _emailController.text;
+    String senha = _senhaController.text;
+
     authService.entrarUsuario(email: email, senha: senha);
     //Navigator.pushNamed(context, '/timeline_screen');
   }

@@ -79,7 +79,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: TextField(
                     controller: _nameController,
                     decoration: InputDecoration(
-                      hintText: 'Nome',
+                      hintText: 'Nome completo',
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(),
@@ -162,6 +162,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   _criarUsuario(
       {required String email, required String senha, required String nome}) {
+    String email = _emailController.text;
+    String nome = _nameController.text;
+    String senha = _confirmPasswordController.text;
+
     authService.cadastrarUsuario(email: email, senha: senha, nome: nome);
   }
 

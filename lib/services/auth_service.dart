@@ -8,8 +8,11 @@ class AuthService {
     print("METODO ENTRAR USUARIO");
   }
 
-  cadastrarUsuario({required String email, required String senha, required String nome}) {
-    _firebaseAuth.createUserWithEmailAndPassword(email: email, password: senha);
+  cadastrarUsuario({required String email, required String senha, required String nome}) async {
+    UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: senha);
+
+    await userCredential.user!.updateDisplayName(nome);
+
     print("METODO CRIAR USUARIO");
   }
 
