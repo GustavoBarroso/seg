@@ -68,6 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 Text(
                   'Crie sua conta',
                   style: TextStyle(
+                    fontFamily: 'Arial',
                     fontSize: 30.0,
                     color: corPrincipal,
                   ),

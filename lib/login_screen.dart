@@ -39,7 +39,7 @@ class _LoginScreen extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Bem-vindo(a) ao SEG',
-                  style: TextStyle(color: corPrincipal, fontSize: 30.0)),
+                  style: TextStyle(fontFamily: 'Arial', color: corPrincipal, fontSize: 30.0)),
               Text('Compartilhando Cuidado, Construindo Confiança',
                   style: TextStyle(color: Colors.grey, fontSize: 16.0)),
               SizedBox(height: 30.0),
