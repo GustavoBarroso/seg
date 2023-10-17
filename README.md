@@ -1,16 +1,13 @@
-# seg
+# SEG
 
-TCC com o tema de smart cities
+Este projeto tem como principal finalidade auxiliar os cidadãos que habitam em metrópoles e utilizam rotas perigosas, isto é, expostas a riscos provenientes a crimes e catástrofes através de aplicativo mobile que proporcione eficiência na comunicação entre os cidadãos e entre autoridades responsáveis por manter a ordem, na intenção de tornar o cotidiano das pessoas mais seguro.
 
-## Getting Started
+O sistema tem como princípio ser algo extremamente intuitivo e acessível a todos, pois quanto maior o número de usuários, maior seria a eficiência, atrelado ao ranking de confiabilidade dos usuários, que possui o objetivo de garantir a autenticidade do report, visto que ele funciona a partir da contribuição dos usuários, que serão avaliados com uma nota de 0.0 a 5.0, que será dada a partir da veracidade e alcance (quantidade de usuários impactados) da informação.
 
-This project is a starting point for a Flutter application.
+## ✏️ Para começar
 
-A few resources to get you started if this is your first Flutter project:
+Este projeto é desenvolvido a partir do framework Flutter.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## 🔥 Firebase
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+O Firebase é uma plataforma de Backend-as-a-Service (BaaS), isto é, ela fornece infraestrutura de back-end pronta para quem desenvolve aplicativos. Logo, ao usar o Firebase, as pessoas desenvolvedoras podem se concentrar na criação da aplicação em si e focar menos na parte de configuração e manutenção de servidores.
