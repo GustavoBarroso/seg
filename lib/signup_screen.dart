@@ -137,7 +137,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: () {
                     enviarClicado();
                   },
-                  child: Text((isEntrando) ? "Criar conta" : "Criar conta"),
+                  child: Text("Criar conta"),
                   style: ElevatedButton.styleFrom(
                     primary: corPrincipal,
                     onPrimary: Colors.white,
@@ -150,21 +150,15 @@ class _SignupScreenState extends State<SignupScreen> {
       ),
     );
   }
+
   enviarClicado() {
     String email = _emailController.text;
     String nome = _nameController.text;
     String senha = _confirmPasswordController.text;
 
-    if (_formKey.currentState!.validate()) {
-      if (isEntrando) {
-        _criarUsuario(email: email, senha: senha, nome: nome);
-      } else {
-        //_criarUsuario(email: email, senha: senha, nome: nome);
-      }
-    }
+    _criarUsuario(email: email, senha: senha, nome: nome);
+
   }
-
-
 
   _criarUsuario(
       {required String email, required String senha, required String nome}) {

@@ -89,7 +89,7 @@ class _LoginScreen extends State<LoginScreen> {
                 onPressed: () {
                   entrarClicado();
                 },
-                child: Text((isEntrando) ? "Entrar" : "Entrar"),
+                child: Text("Entrar"),
                 style: ElevatedButton.styleFrom(
                   primary: corPrincipal,
                   onPrimary: Colors.white,
@@ -107,17 +107,13 @@ class _LoginScreen extends State<LoginScreen> {
     String email = _emailController.text;
     String senha = _senhaController.text;
 
-    if (_formKey.currentState!.validate()) {
-      if (isEntrando) {
-        _entrarUsuario(email: email, senha: senha);
-      } else {
-        //_criarUsuario(email: email, senha: senha, nome: nome);
-      }
-    }
+    _entrarUsuario(email: email, senha: senha);
+
   }
 
   _entrarUsuario({required String email, required String senha}) {
     authService.entrarUsuario(email: email, senha: senha);
+    //Navigator.pushNamed(context, '/timeline_screen');
   }
 
 }
