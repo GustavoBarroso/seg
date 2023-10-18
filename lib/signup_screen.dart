@@ -61,7 +61,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
                     controller: _nameController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Nome completo',
                       filled: true,
                       fillColor: Colors.white,
@@ -75,7 +75,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
                     controller: _emailController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Email',
                       filled: true,
                       fillColor: Colors.white,
@@ -89,7 +89,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
                     controller: _passwordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Senha',
                       filled: true,
                       fillColor: Colors.white,
@@ -104,7 +104,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: TextField(
                     controller: _confirmPasswordController,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'Confirmar Senha',
                       filled: true,
                       fillColor: Colors.white,
@@ -118,7 +118,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   onPressed: () {
                     enviarClicado();
                   },
-                  child: Text("Criar conta"),
+                  child: Text("Cadastrar"),
                   style: ElevatedButton.styleFrom(
                     primary: corPrincipal,
                     onPrimary: Colors.white,

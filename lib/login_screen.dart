@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:seg/services/auth_service.dart';
 
+import 'component/show_snackbar.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -39,7 +41,10 @@ class _LoginScreen extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('Bem-vindo(a) ao SEG',
-                  style: TextStyle(fontFamily: 'Arial', color: corPrincipal, fontSize: 30.0)),
+                  style: TextStyle(
+                      fontFamily: 'Arial',
+                      color: corPrincipal,
+                      fontSize: 30.0)),
               Text('Compartilhando Cuidado, Construindo Confiança',
                   style: TextStyle(color: Colors.grey, fontSize: 16.0)),
               SizedBox(height: 30.0),
@@ -95,7 +100,15 @@ class _LoginScreen extends State<LoginScreen> {
                   onPrimary: Colors.white,
                 ),
               ),
-              SizedBox(height: 15.0),
+              //SizedBox(height: 15.0),
+
+              TextButton(
+                  style: TextButton.styleFrom(
+                    primary: corPrincipal,
+                  ),
+                  onPressed: _redefinirSenha,
+                  child: const Text("Esqueci minha senha.",
+                      style: TextStyle(decoration: TextDecoration.underline))),
             ],
           ),
         ),
@@ -108,15 +121,64 @@ class _LoginScreen extends State<LoginScreen> {
     String senha = _senhaController.text;
 
     _entrarUsuario(email: email, senha: senha);
-
   }
 
   _entrarUsuario({required String email, required String senha}) {
     String email = _emailController.text;
     String senha = _senhaController.text;
 
-    authService.entrarUsuario(email: email, senha: senha);
-    //Navigator.pushNamed(context, '/timeline_screen');
+    authService.entrarUsuario(email: email, senha: senha).then((String? erro) {
+      if (erro == null) {
+        showSnackBar(
+            context: context,
+            mensage: "Login realizado com sucesso.",
+            isError: false);
+      } else {
+        showSnackBar(context: context, mensage: erro);
+      }
+    });
   }
 
+  _redefinirSenha() {
+    String email = _emailController.text;
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController _redefinicaoSenhaController =
+            TextEditingController(text: email);
+        return AlertDialog(
+          title: const Text("Confirme o e-mail para redefinição de senha."),
+          content: TextFormField(
+            controller: _redefinicaoSenhaController,
+            decoration:
+                const InputDecoration(label: Text("Confirme o e-mail.")),
+          ),
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(20))),
+          actions: [
+            TextButton(
+                style: TextButton.styleFrom(
+                  primary: corPrincipal,
+                ),
+                onPressed: () {
+                  authService
+                      .redefinirsenha(email: _redefinicaoSenhaController.text)
+                      .then((String? erro) {
+                    if (erro == null) {
+                      showSnackBar(
+                          context: context,
+                          mensage: "E-mail para redefinição de senha enviado.",
+                          isError: false);
+                    } else {
+                      showSnackBar(context: context, mensage: erro);
+                    }
+                    Navigator.pop(context);
+                  });
+                },
+                child: const Text("Redefinir senha"))
+          ],
+        );
+      },
+    );
+  }
 }

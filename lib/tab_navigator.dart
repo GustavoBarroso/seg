@@ -26,7 +26,7 @@ class _TabNavigatorState extends State<TabNavigator> {
             _currentIndex = index;
           });
         },
-        items: [
+        items: const [
           BottomNavigationBarItem(icon: Icon(Icons.login, color: Colors.indigo),label: 'Login'),
           BottomNavigationBarItem(
               icon: Icon(Icons.person_add, color: Colors.indigo), label: 'Criar Conta'),
