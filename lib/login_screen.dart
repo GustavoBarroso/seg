@@ -168,7 +168,7 @@ class _LoginScreen extends State<LoginScreen> {
                     if (erro == null) {
                       showSnackBar(
                           context: context,
-                          mensage: "E-mail para redefinição de senha enviado.",
+                          mensage: "E-mail para redefinição de senha enviado. Confira a pasta spam.",
                           isError: false);
                     } else {
                       showSnackBar(context: context, mensage: erro);
