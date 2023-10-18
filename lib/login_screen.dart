@@ -133,6 +133,7 @@ class _LoginScreen extends State<LoginScreen> {
             context: context,
             mensage: "Login realizado com sucesso.",
             isError: false);
+        Navigator.pushNamed(context, '/timeline_screen');
       } else {
         showSnackBar(context: context, mensage: erro);
       }
