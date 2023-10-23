@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:seg/component/show_confirm_password.dart';
 import 'package:seg/services/auth_service.dart';
 import 'report_screen.dart';
 
-
 class Timeline_Screen extends StatefulWidget {
+  final User user;
+
+  const Timeline_Screen({super.key, required this.user});
+
   @override
   _Timeline_Screen createState() => _Timeline_Screen();
 }
@@ -19,6 +23,18 @@ class _Timeline_Screen extends State<Timeline_Screen> {
       drawer: Drawer(
         child: ListView(
           children: [
+            UserAccountsDrawerHeader(
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.white,
+              ),
+              accountName: Text((widget.user.displayName != null)
+                  ? widget.user.displayName!
+                  : ""),
+              accountEmail: Text(widget.user.email!),
+              decoration: BoxDecoration(
+                color: corPrincipal,
+              ),
+            ),
             ListTile(
                 leading: const Icon(
                   Icons.delete,
