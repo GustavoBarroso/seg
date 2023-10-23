@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:seg/geocoding_service.dart';
+
 import 'dart:io';
 
 class AddReport extends StatefulWidget {
