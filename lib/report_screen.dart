@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:image/image.dart' as img;
 import 'dart:io';
+import 'dart:convert';
 
 void main() => runApp(MaterialApp(home: AddReport()));
 
@@ -106,18 +106,21 @@ class _AddReportState extends State<AddReport> {
         padding: EdgeInsets.all(16.0),
         child: Column(
           children: <Widget>[
-            TextField(
+            TextFormField(
               controller: descricaoController,
+              maxLines: null,
               decoration: InputDecoration(labelText: 'Descrição'),
             ),
             TextField(
               controller: localizacaoController,
+              readOnly: true,
               decoration: InputDecoration(labelText: 'Localização'),
             ),
+
             SizedBox(height: 20),
             DropdownButton<String>(
               value: _incidenteSelecionado,
-              hint: Text('Selecione um incidente'),
+              hint: Text('Selecione um tipo de incidente'),
               onChanged: (String? newValue) {
                 setState(() {
                   _incidenteSelecionado = newValue;

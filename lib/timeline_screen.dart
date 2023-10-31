@@ -1,64 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:seg/component/show_confirm_password.dart';
-import 'package:seg/services/auth_service.dart';
 import 'report_screen.dart';
+import 'drawer.dart'; // Importe o arquivo do drawer
 
-class Timeline_Screen extends StatefulWidget {
+class TimelineScreen extends StatefulWidget {
   final User user;
 
-  const Timeline_Screen({super.key, required this.user});
+  const TimelineScreen({super.key, required this.user});
 
   @override
-  _Timeline_Screen createState() => _Timeline_Screen();
+  _TimelineScreenState createState() => _TimelineScreenState();
 }
 
-class _Timeline_Screen extends State<Timeline_Screen> {
+class _TimelineScreenState extends State<TimelineScreen> {
   Color corPrincipal = Color(0xFF243D7E);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              currentAccountPicture: const CircleAvatar(
-                backgroundColor: Colors.white,
-              ),
-              accountName: Text((widget.user.displayName != null)
-                  ? widget.user.displayName!
-                  : ""),
-              accountEmail: Text(widget.user.email!),
-              decoration: BoxDecoration(
-                color: corPrincipal,
-              ),
-            ),
-            ListTile(
-                leading: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ),
-                title: const Text("Apagar conta"),
-                onTap: () {
-                  showConfirmPasswordDialog(context: context, email: "");
-                }),
-            ListTile(
-                leading: Icon(Icons.account_circle),
-                title: Text("Editar Perfil"),
-                onTap: () {
-                  AuthService().deslogar();
-                }),
-            ListTile(
-                leading: Icon(Icons.logout),
-                title: Text("Sair"),
-                onTap: () {
-                  AuthService().deslogar();
-                }),
-          ],
-        ),
-      ),
+      drawer: CustomDrawer(user: widget.user), // Use o drawer personalizado
       appBar: AppBar(
         toolbarHeight: 50,
         elevation: 0.0,

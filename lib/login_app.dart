@@ -22,7 +22,7 @@ class RoteadorTelas extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         } else {
           if (snapshot.hasData) {
-            return Timeline_Screen(
+            return TimelineScreen(
               user: snapshot.data!,
             );
           } else {
