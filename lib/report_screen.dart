@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:seg/geocoding_service.dart';
-
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:image/image.dart' as img;
 import 'dart:io';
+
+void main() => runApp(MaterialApp(home: AddReport()));
 
 class AddReport extends StatefulWidget {
   @override
@@ -15,6 +18,16 @@ class _AddReportState extends State<AddReport> {
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
   File? _image;
+  String? _incidenteSelecionado;
+
+  List<String> incidentes = [
+    'Alagamento',
+    'Engarrafamento',
+    'Incêndio',
+    'Via Interditada',
+    'Outros'
+    // Adicione mais incidentes conforme necessário
+  ];
 
   @override
   void initState() {
@@ -27,29 +40,55 @@ class _AddReportState extends State<AddReport> {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      setState(() {
-        localizacaoController.text =
-        'Lat: ${position.latitude}, Long: ${position.longitude}';
-      });
+
+      Uri url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = json.decode(response.body);
+        setState(() {
+          localizacaoController.text = data['display_name'];
+        });
+      } else {
+        setState(() {
+          localizacaoController.text = 'Endereço não encontrado';
+        });
+      }
     } catch (e) {
+      setState(() {
+        localizacaoController.text = 'Erro ao obter a localização: $e';
+      });
       print('Erro ao obter a localização: $e');
     }
   }
 
   Future<void> _getImageFromGallery() async {
-    var image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image != null) {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
+      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
+
       setState(() {
-        _image = File(image.path);
+        _image = croppedFile;
       });
     }
   }
 
   Future<void> _getImageFromCamera() async {
-    var image = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (image != null) {
+    final picker = ImagePicker();
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
+      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
+
       setState(() {
-        _image = File(image.path);
+        _image = croppedFile;
       });
     }
   }
@@ -76,6 +115,24 @@ class _AddReportState extends State<AddReport> {
               decoration: InputDecoration(labelText: 'Localização'),
             ),
             SizedBox(height: 20),
+            DropdownButton<String>(
+              value: _incidenteSelecionado,
+              hint: Text('Selecione um incidente'),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _incidenteSelecionado = newValue;
+                });
+              },
+              items: incidentes.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+            SizedBox(height: 20),
+            _image != null ? Image.file(_image!) : Container(),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -97,10 +154,6 @@ class _AddReportState extends State<AddReport> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            _image != null
-                ? Image.file(_image!)
-                : Container(),
           ],
         ),
       ),
@@ -118,6 +171,7 @@ class _AddReportState extends State<AddReport> {
               // descricaoController.text contém a descrição
               // localizacaoController.text contém a localização
               // _image contém o arquivo da imagem (pode ser null se nenhuma imagem for selecionada)
+              // _incidenteSelecionado contém o incidente selecionado
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

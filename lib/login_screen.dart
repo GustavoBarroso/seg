@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:seg/services/auth_service.dart';
-
 import 'component/show_snackbar.dart';
 
 class LoginScreen extends StatefulWidget {
