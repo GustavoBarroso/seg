@@ -3,12 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seg/EmergenciaScreen.dart';
 import 'package:seg/services/auth_service.dart';
 import 'package:seg/component/show_confirm_password.dart';
+import 'package:seg/storage/storage_screen.dart';
+import 'package:seg/timeline_screen.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends StatefulWidget {
   final User user;
 
-  CustomDrawer({required this.user});
+  const CustomDrawer({super.key, required this.user});
 
+  @override
+  State<CustomDrawer> createState() => _CustomDrawer();
+}
+
+class _CustomDrawer extends State<CustomDrawer> {
   Color corPrincipal = Color(0xFF243D7E);
 
   @override
@@ -17,14 +24,29 @@ class CustomDrawer extends StatelessWidget {
       child: Column(
         children: [
           UserAccountsDrawerHeader(
-            currentAccountPicture: const CircleAvatar(
-              backgroundColor: Colors.white,
+            currentAccountPicture: CircleAvatar(
+              backgroundImage: (widget.user.photoURL != null)
+                  ? NetworkImage(widget.user.photoURL!)
+                  : null,
             ),
-            accountName: Text((user.displayName != null) ? user.displayName! : ""),
-            accountEmail: Text(user.email!),
+            accountName: Text(
+              (widget.user.displayName != null) ? widget.user.displayName! : "",
+            ),
+            accountEmail: Text(widget.user.email!),
             decoration: BoxDecoration(
               color: corPrincipal,
             ),
+          ),
+          ListTile(
+            leading: Icon(Icons.home),
+            title: Text("Página Inicial"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TimelineScreen(user: widget.user)),
+              );
+            },
           ),
           ListTile(
             leading: Icon(Icons.phone),
@@ -33,6 +55,17 @@ class CustomDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => EmergenciaScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.photo),
+            title: const Text("Mudar foto de perfil"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => StorageScrenn(user: widget.user)),
               );
             },
           ),
@@ -69,7 +102,8 @@ class CustomDrawer extends StatelessWidget {
           Expanded(
             child: Align(
               alignment: Alignment.bottomCenter,
-              child: ListTile(
+              child:
+              ListTile(
                 leading: const Icon(
                   Icons.delete,
                   color: Colors.red,

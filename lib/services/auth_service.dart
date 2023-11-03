@@ -23,17 +23,19 @@ class AuthService {
     required String senha,
     required String nome}) async {
     try {
-      await _firebaseAuth
-          .createUserWithEmailAndPassword(email: email, password: senha);
-      User? user = _firebaseAuth.currentUser;
-      await user?.sendEmailVerification();
+      UserCredential userCredential =
+      await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: senha,
+      );
 
-      } on FirebaseAuthException catch (e)
-      {
-        switch (e.code) {
-          case "email-already-in-use":
-            return "O e-mail já está em uso.";
-        }
+      await userCredential.user!.updateDisplayName(nome);
+
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "email-already-in-use":
+          return "O e-mail já está em uso.";
+      }
         return e.code;
       }
       return null;
