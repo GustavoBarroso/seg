@@ -47,7 +47,7 @@ class EmergenciaScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Emergência'),
+        title: Text('Telefones de Emergência'),
         backgroundColor: Color(0xFF243D7E),
       ),
       body: Center(

@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seg/EmergenciaScreen.dart';
 import 'package:seg/services/auth_service.dart';
 import 'package:seg/component/show_confirm_password.dart';
@@ -14,7 +14,7 @@ class CustomDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
+      child: Column(
         children: [
           UserAccountsDrawerHeader(
             currentAccountPicture: const CircleAvatar(
@@ -27,22 +27,12 @@ class CustomDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-            title: const Text("Apagar conta"),
-            onTap: () {
-              showConfirmPasswordDialog(context: context, email: "");
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.phone),
             title: Text("Emergência"),
             onTap: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EmergenciaScreen()),
+                context,
+                MaterialPageRoute(builder: (context) => EmergenciaScreen()),
               );
             },
           ),
@@ -50,9 +40,47 @@ class CustomDrawer extends StatelessWidget {
             leading: Icon(Icons.logout),
             title: Text("Sair"),
             onTap: () {
-              AuthService().deslogar();
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Sair"),
+                    content: Text("Tem certeza que deseja sair?"),
+                    actions: [
+                      TextButton(
+                        child: Text("Cancelar"),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      TextButton(
+                        child: Text("Sair"),
+                        onPressed: () {
+                          AuthService().deslogar();
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
-          )
+          ),
+          Expanded(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: ListTile(
+                leading: const Icon(
+                  Icons.delete,
+                  color: Colors.red,
+                ),
+                title: const Text("Apagar conta"),
+                onTap: () {
+                  showConfirmPasswordDialog(context: context, email: "");
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );

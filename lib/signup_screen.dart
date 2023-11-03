@@ -13,11 +13,15 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
+    _emailController.dispose();
+    _nameController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -40,92 +44,111 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
         ),
       ),
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Crie sua conta',
-                  style: TextStyle(
-                    fontFamily: 'Arial',
-                    fontSize: 30.0,
-                    color: corPrincipal,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Crie sua conta',
+                style: TextStyle(
+                  fontFamily: 'Arial',
+                  fontSize: 30.0,
+                  color: corPrincipal,
+                ),
+              ),
+              SizedBox(height: 20.0),
+              // Campo de Nome
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: 'Nome completo',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 20.0),
-                // Campo de Nome
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      hintText: 'Nome completo',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
+              ),
+              SizedBox(height: 12.0),
+              // Campo de Email
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: 'Email',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+              SizedBox(height: 12.0),
+              // Campo de Senha
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    hintText: 'Senha',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
                     ),
                   ),
+                  obscureText: !_isPasswordVisible,
                 ),
-                SizedBox(height: 12.0),
-                // Campo de Email
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      hintText: 'Email',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
+              ),
+              SizedBox(height: 12.0),
+              // Campo de Confirmar Senha
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: TextField(
+                  controller: _confirmPasswordController,
+                  decoration: InputDecoration(
+                    hintText: 'Confirmar Senha',
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                        });
+                      },
                     ),
                   ),
+                  obscureText: !_isConfirmPasswordVisible,
                 ),
-                SizedBox(height: 12.0),
-                // Campo de Senha
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      hintText: 'Senha',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                  ),
+              ),
+              SizedBox(height: 12.0),
+              ElevatedButton(
+                onPressed: () {
+                  enviarClicado();
+                },
+                child: Text("Cadastrar"),
+                style: ElevatedButton.styleFrom(
+                  primary: corPrincipal,
+                  onPrimary: Colors.white,
                 ),
-                SizedBox(height: 12.0),
-                // Campo de Confirmar Senha
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0),
-                  child: TextField(
-                    controller: _confirmPasswordController,
-                    decoration: const InputDecoration(
-                      hintText: 'Confirmar Senha',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(),
-                    ),
-                    obscureText: true,
-                  ),
-                ),
-                SizedBox(height: 12.0),
-                ElevatedButton(
-                  onPressed: () {
-                    enviarClicado();
-                  },
-                  child: Text("Cadastrar"),
-                  style: ElevatedButton.styleFrom(
-                    primary: corPrincipal,
-                    onPrimary: Colors.white,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
