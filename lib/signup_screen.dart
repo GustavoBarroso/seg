@@ -174,7 +174,7 @@ class _SignupScreenState extends State<SignupScreen> {
         if (erro == null) {
           showSnackBar(
               context: context,
-              mensage: "Usuário cadastrado com sucesso.",
+              mensage: "Usuário cadastrado com sucesso. Enviado verificação de e-mail.",
               isError: false);
         } else {
           showSnackBar(context: context, mensage: erro);
