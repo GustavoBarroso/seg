@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:seg/EmergenciaScreen.dart';
 import 'package:seg/services/auth_service.dart';
 import 'package:seg/component/show_confirm_password.dart';
 
@@ -36,12 +37,22 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: Icon(Icons.phone),
+            title: Text("Emergência"),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EmergenciaScreen()),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.logout),
             title: Text("Sair"),
             onTap: () {
               AuthService().deslogar();
             },
-          ),
+          )
         ],
       ),
     );
