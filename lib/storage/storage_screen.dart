@@ -30,7 +30,7 @@ class _StorageScrennState extends State<StorageScrenn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(user: widget.user), // Use o drawer personalizado
+      drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
         title: const Text("Foto de perfil"),
         toolbarHeight: 50,

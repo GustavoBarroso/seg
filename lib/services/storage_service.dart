@@ -21,4 +21,20 @@ class StorageService {
         .ref("$pathService/$fileName.png")
         .getDownloadURL();
   }
+
+  Future<String> uploadReport({required File, required String fileName}) async {
+    await _firebaseStorage.ref("reports/$fileName.png").putFile(File);
+    String url = await _firebaseStorage
+        .ref("reports/$fileName.png")
+        .getDownloadURL();
+    //await _firebaseAuth.currentUser!.updatePhotoURL(url);
+    return url;
+  }
+
+  Future<String> getDownloadUrlByFileNameReports({required String fileName}) async {
+    return await _firebaseStorage
+        .ref("reports/$fileName.png")
+        .getDownloadURL();
+  }
+
 }

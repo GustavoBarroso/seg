@@ -5,6 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'dart:convert';
+import 'package:seg/services/storage_service.dart';
+
+import 'component/show_snackbar.dart';
 
 void main() => runApp(MaterialApp(home: AddReport()));
 
@@ -18,6 +21,7 @@ class _AddReportState extends State<AddReport> {
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
   File? _image;
+  String? urlPhoto;
   String? _incidenteSelecionado;
 
   List<String> incidentes = [
@@ -62,7 +66,7 @@ class _AddReportState extends State<AddReport> {
     }
   }
 
-  Future<void> _getImageFromGallery() async {
+  /*Future<void> _getImageFromGallery() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
@@ -91,6 +95,54 @@ class _AddReportState extends State<AddReport> {
         _image = croppedFile;
       });
     }
+  }*/
+
+  uploadImageCamera() {
+    ImagePicker imagePicker = ImagePicker();
+    imagePicker
+        .pickImage(
+        source: ImageSource.camera,
+        maxHeight: 2000,
+        maxWidth: 2000,
+        imageQuality: 50)
+        .then((XFile? image) {
+      if (image != null) {
+        StorageService()
+            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
+            .then((String urlDownload) {
+          setState(() {
+            urlPhoto = urlDownload;
+          });
+          //refresh();
+        });
+      } else {
+        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
+      }
+    });
+  }
+
+  uploadImageGallery() {
+    ImagePicker imagePicker = ImagePicker();
+    imagePicker
+        .pickImage(
+        source: ImageSource.gallery,
+        maxHeight: 2000,
+        maxWidth: 2000,
+        imageQuality: 50)
+        .then((XFile? image) {
+      if (image != null) {
+        StorageService()
+            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
+            .then((String urlDownload) {
+          setState(() {
+            urlPhoto = urlDownload;
+          });
+          //refresh();
+        });
+      } else {
+        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
+      }
+    });
   }
 
   @override
@@ -134,13 +186,13 @@ class _AddReportState extends State<AddReport> {
               }).toList(),
             ),
             SizedBox(height: 20),
-            _image != null ? Image.file(_image!) : Container(),
+            //urlPhoto != null ? Image.file(urlPhoto! as File) : Container(),
             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 ElevatedButton.icon(
-                  onPressed: _getImageFromGallery,
+                  onPressed: uploadImageGallery,
                   icon: Icon(Icons.photo),
                   label: Text('Galeria'),
                   style: ElevatedButton.styleFrom(
@@ -148,7 +200,7 @@ class _AddReportState extends State<AddReport> {
                   ),
                 ),
                 ElevatedButton.icon(
-                  onPressed: _getImageFromCamera,
+                  onPressed: uploadImageCamera,
                   icon: Icon(Icons.add_a_photo_rounded),
                   label: Text('Câmera'),
                   style: ElevatedButton.styleFrom(
@@ -169,13 +221,7 @@ class _AddReportState extends State<AddReport> {
             style: ElevatedButton.styleFrom(
               primary: corPrincipal,
             ),
-            onPressed: () {
-              // Lógica para publicar o relatório
-              // descricaoController.text contém a descrição
-              // localizacaoController.text contém a localização
-              // _image contém o arquivo da imagem (pode ser null se nenhuma imagem for selecionada)
-              // _incidenteSelecionado contém o incidente selecionado
-            },
+            onPressed: () {},
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -188,4 +234,5 @@ class _AddReportState extends State<AddReport> {
       ),
     );
   }
+
 }
