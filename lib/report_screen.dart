@@ -221,7 +221,8 @@ class _AddReportState extends State<AddReport> {
             style: ElevatedButton.styleFrom(
               primary: corPrincipal,
             ),
-            onPressed: () {},
+            onPressed: () {}, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
+            //TODO: DO JEITO QUE ESTÁ TÁ PUBLICANDO DIRETO
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
