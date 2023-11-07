@@ -241,7 +241,7 @@ class _AddReportState extends State<AddReport> {
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)
-                  .set(report.toMap());
+                  .set(report.toMap()); //TODO: ADICONAR URL DE DOWNLOAD DA FOTO NO BANCO
               /*await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
