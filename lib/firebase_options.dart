@@ -49,6 +49,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '961059594481',
     projectId: 'seg-tcc-f84ab',
     authDomain: 'seg-tcc-f84ab.firebaseapp.com',
+    databaseURL: 'https://seg-tcc-f84ab-default-rtdb.firebaseio.com',
     storageBucket: 'seg-tcc-f84ab.appspot.com',
     measurementId: 'G-ELPHC950VF',
   );
@@ -58,6 +59,7 @@ class DefaultFirebaseOptions {
     appId: '1:961059594481:android:a4858c06fca4fb815c8950',
     messagingSenderId: '961059594481',
     projectId: 'seg-tcc-f84ab',
+    databaseURL: 'https://seg-tcc-f84ab-default-rtdb.firebaseio.com',
     storageBucket: 'seg-tcc-f84ab.appspot.com',
   );
 
@@ -66,6 +68,7 @@ class DefaultFirebaseOptions {
     appId: '1:961059594481:ios:d24d5cdaa9f318715c8950',
     messagingSenderId: '961059594481',
     projectId: 'seg-tcc-f84ab',
+    databaseURL: 'https://seg-tcc-f84ab-default-rtdb.firebaseio.com',
     storageBucket: 'seg-tcc-f84ab.appspot.com',
     iosBundleId: 'com.example.seg',
   );
@@ -75,6 +78,7 @@ class DefaultFirebaseOptions {
     appId: '1:961059594481:ios:2599fbeb6449b39e5c8950',
     messagingSenderId: '961059594481',
     projectId: 'seg-tcc-f84ab',
+    databaseURL: 'https://seg-tcc-f84ab-default-rtdb.firebaseio.com',
     storageBucket: 'seg-tcc-f84ab.appspot.com',
     iosBundleId: 'com.example.seg.RunnerTests',
   );

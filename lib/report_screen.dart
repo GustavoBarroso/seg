@@ -19,8 +19,7 @@ class _AddReportState extends State<AddReport> {
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
-  bool _buttonsVisible = true;
-  File? _imageFile;
+  File? _image;
   String? urlPhoto;
   String? _incidenteSelecionado;
 
@@ -28,8 +27,8 @@ class _AddReportState extends State<AddReport> {
     'Alagamento',
     'Engarrafamento',
     'Incêndio',
-    'Via interditada',
-    'Falta de energia',
+    'Via Interditada',
+    'Falta de Luz'
     'Outros'
   ];
 
@@ -70,8 +69,8 @@ class _AddReportState extends State<AddReport> {
     ImagePicker imagePicker = ImagePicker();
     XFile? image = await imagePicker.pickImage(
       source: source,
-      maxHeight: 1200,
-      maxWidth: 1200,
+      maxHeight: 1000,
+      maxWidth: 1000,
       imageQuality: 50,
     );
 
@@ -83,8 +82,6 @@ class _AddReportState extends State<AddReport> {
         );
         setState(() {
           urlPhoto = urlDownload;
-          _imageFile = File(image.path);
-          _buttonsVisible = false; // Oculta os botões após a seleção da imagem
         });
       } catch (error) {
         // Lidar com erros de upload, se necessário
@@ -144,46 +141,28 @@ class _AddReportState extends State<AddReport> {
               }).toList(),
             ),
             SizedBox(height: 20),
+            //urlPhoto != null ? Image.file(urlPhoto! as File) : Container(),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageGallery,
-                    icon: Icon(Icons.photo),
-                    label: Text('Galeria'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageCamera,
-                    icon: Icon(Icons.add_a_photo_rounded),
-                    label: Text('Câmera'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-              ],
-            ),
-
-            SizedBox(
-              height: 400, // Defina a altura máxima que você deseja
-              width: 400, // Defina a largura máxima que você deseja
-              child: urlPhoto != null
-                  ? ClipRect(
-                child: Align(
-                  alignment: Alignment.center,
-                  widthFactor: 1.0,
-                  heightFactor: 1.0,
-                  child: Image.network(
-                    urlPhoto!,
-                    fit: BoxFit.cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
+                ElevatedButton.icon(
+                  onPressed: uploadImageGallery,
+                  icon: Icon(Icons.photo),
+                  label: Text('Galeria'),
+                  style: ElevatedButton.styleFrom(
+                    primary: corPrincipal,
                   ),
                 ),
-              )
-                  : Container(),
+                ElevatedButton.icon(
+                  onPressed: uploadImageCamera,
+                  icon: Icon(Icons.add_a_photo_rounded),
+                  label: Text('Câmera'),
+                  style: ElevatedButton.styleFrom(
+                    primary: corPrincipal,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
