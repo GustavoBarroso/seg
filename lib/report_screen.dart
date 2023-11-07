@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'dart:convert';
 import 'package:seg/services/storage_service.dart';
@@ -29,8 +28,8 @@ class _AddReportState extends State<AddReport> {
     'Engarrafamento',
     'Incêndio',
     'Via Interditada',
+    'Falta de Luz'
     'Outros'
-    // Adicione mais incidentes conforme necessário
   ];
 
   @override
@@ -66,83 +65,39 @@ class _AddReportState extends State<AddReport> {
     }
   }
 
-  /*Future<void> _getImageFromGallery() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  Future<void> _uploadImage(ImageSource source) async {
+    ImagePicker imagePicker = ImagePicker();
+    XFile? image = await imagePicker.pickImage(
+      source: source,
+      maxHeight: 1000,
+      maxWidth: 1000,
+      imageQuality: 50,
+    );
 
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      final decodedImage = img.decodeImage(bytes);
-      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
-      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
-
-      setState(() {
-        _image = croppedFile;
-      });
+    if (image != null) {
+      try {
+        String urlDownload = await StorageService().uploadReport(
+          File: File(image.path),
+          fileName: DateTime.now().toString(),
+        );
+        setState(() {
+          urlPhoto = urlDownload;
+        });
+      } catch (error) {
+        // Lidar com erros de upload, se necessário
+        print("Erro ao fazer upload da imagem: $error");
+      }
+    } else {
+      showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
     }
   }
 
-  Future<void> _getImageFromCamera() async {
-    final picker = ImagePicker();
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-    if (pickedFile != null) {
-      final bytes = await pickedFile.readAsBytes();
-      final decodedImage = img.decodeImage(bytes);
-      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
-      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
-
-      setState(() {
-        _image = croppedFile;
-      });
-    }
-  }*/
-
-  uploadImageCamera() {
-    ImagePicker imagePicker = ImagePicker();
-    imagePicker
-        .pickImage(
-        source: ImageSource.camera,
-        maxHeight: 2000,
-        maxWidth: 2000,
-        imageQuality: 50)
-        .then((XFile? image) {
-      if (image != null) {
-        StorageService()
-            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
-            .then((String urlDownload) {
-          setState(() {
-            urlPhoto = urlDownload;
-          });
-          //refresh();
-        });
-      } else {
-        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
-      }
-    });
+  void uploadImageCamera() {
+    _uploadImage(ImageSource.camera);
   }
 
-  uploadImageGallery() {
-    ImagePicker imagePicker = ImagePicker();
-    imagePicker
-        .pickImage(
-        source: ImageSource.gallery,
-        maxHeight: 2000,
-        maxWidth: 2000,
-        imageQuality: 50)
-        .then((XFile? image) {
-      if (image != null) {
-        StorageService()
-            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
-            .then((String urlDownload) {
-          setState(() {
-            urlPhoto = urlDownload;
-          });
-          //refresh();
-        });
-      } else {
-        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
-      }
-    });
+  void uploadImageGallery() {
+    _uploadImage(ImageSource.gallery);
   }
 
   @override

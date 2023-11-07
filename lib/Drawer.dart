@@ -38,6 +38,17 @@ class _CustomDrawer extends State<CustomDrawer> {
             ),
           ),
           ListTile(
+            leading: Icon(Icons.account_circle),
+            title: const Text("Perfil"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => StorageScreen(user: widget.user)),
+              );
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.home),
             title: Text("Página Inicial"),
             onTap: () {
@@ -58,17 +69,7 @@ class _CustomDrawer extends State<CustomDrawer> {
               );
             },
           ),
-          ListTile(
-            leading: Icon(Icons.photo),
-            title: const Text("Mudar foto de perfil"),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => StorageScrenn(user: widget.user)),
-              );
-            },
-          ),
+
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("Sair"),

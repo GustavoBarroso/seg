@@ -24,7 +24,6 @@ class _StorageScreenState extends State<StorageScreen> {
   List<String> listFiles = [];
   Color corPrincipal = Color(0xFF243D7E);
 
-  final StorageService _storageService = StorageService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -32,7 +31,7 @@ class _StorageScreenState extends State<StorageScreen> {
     return Scaffold(
       drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
-        title: const Text("Foto de perfil"),
+        title: const Text("Perfil"),
         toolbarHeight: 50,
         elevation: 0.0,
         backgroundColor: corPrincipal,
@@ -95,8 +94,8 @@ class _StorageScreenState extends State<StorageScreen> {
     imagePicker
         .pickImage(
             source: ImageSource.gallery,
-            maxHeight: 2000,
-            maxWidth: 2000,
+            maxHeight: 700,
+            maxWidth: 700,
             imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
