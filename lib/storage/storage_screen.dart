@@ -9,22 +9,21 @@ import '../component/show_snackbar.dart';
 
 String? urlPhoto;
 
-class StorageScrenn extends StatefulWidget {
-  StorageScrenn({super.key, required this.user});
+class StorageScreen extends StatefulWidget {
+  StorageScreen({super.key, required this.user});
 
   final User user;
 
   final StorageService storageService = StorageService();
 
   @override
-  State<StorageScrenn> createState() => _StorageScrennState();
+  State<StorageScreen> createState() => _StorageScreenState();
 }
 
-class _StorageScrennState extends State<StorageScrenn> {
+class _StorageScreenState extends State<StorageScreen> {
   List<String> listFiles = [];
   Color corPrincipal = Color(0xFF243D7E);
 
-  final StorageService _storageService = StorageService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -32,7 +31,7 @@ class _StorageScrennState extends State<StorageScrenn> {
     return Scaffold(
       drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
-        title: const Text("Foto de perfil"),
+        title: const Text("Perfil"),
         toolbarHeight: 50,
         elevation: 0.0,
         backgroundColor: corPrincipal,
@@ -95,8 +94,8 @@ class _StorageScrennState extends State<StorageScrenn> {
     imagePicker
         .pickImage(
             source: ImageSource.gallery,
-            maxHeight: 2000,
-            maxWidth: 2000,
+            maxHeight: 700,
+            maxWidth: 700,
             imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
