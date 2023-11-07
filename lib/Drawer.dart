@@ -59,8 +59,8 @@ class _CustomDrawer extends State<CustomDrawer> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.photo),
-            title: const Text("Mudar foto de perfil"),
+            leading: Icon(Icons.person),
+            title: const Text("Perfil"),
             onTap: () {
               Navigator.push(
                 context,
