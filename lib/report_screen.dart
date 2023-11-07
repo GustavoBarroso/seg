@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
@@ -6,10 +9,15 @@ import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'dart:convert';
 import 'package:seg/services/storage_service.dart';
+import 'package:seg/timeline_screen.dart';
+import 'package:uuid/uuid.dart';
 
+import 'component/report.dart';
 import 'component/show_snackbar.dart';
 
 void main() => runApp(MaterialApp(home: AddReport()));
+
+late final User user;
 
 class AddReport extends StatefulWidget {
   @override
@@ -17,6 +25,9 @@ class AddReport extends StatefulWidget {
 }
 
 class _AddReportState extends State<AddReport> {
+  final List<Report> listReport = [];
+  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
@@ -45,7 +56,8 @@ class _AddReportState extends State<AddReport> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      Uri url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
+      Uri url = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -101,14 +113,15 @@ class _AddReportState extends State<AddReport> {
     ImagePicker imagePicker = ImagePicker();
     imagePicker
         .pickImage(
-        source: ImageSource.camera,
-        maxHeight: 2000,
-        maxWidth: 2000,
-        imageQuality: 50)
+            source: ImageSource.camera,
+            maxHeight: 1000,
+            maxWidth: 1000,
+            imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
         StorageService()
-            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
+            .uploadReport(
+                File: File(image.path), fileName: DateTime.now().toString())
             .then((String urlDownload) {
           setState(() {
             urlPhoto = urlDownload;
@@ -125,14 +138,15 @@ class _AddReportState extends State<AddReport> {
     ImagePicker imagePicker = ImagePicker();
     imagePicker
         .pickImage(
-        source: ImageSource.gallery,
-        maxHeight: 2000,
-        maxWidth: 2000,
-        imageQuality: 50)
+            source: ImageSource.gallery,
+            maxHeight: 1000,
+            maxWidth: 1000,
+            imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
         StorageService()
-            .uploadReport(File: File(image.path), fileName: DateTime.now().toString())
+            .uploadReport(
+                File: File(image.path), fileName: DateTime.now().toString())
             .then((String urlDownload) {
           setState(() {
             urlPhoto = urlDownload;
@@ -221,7 +235,17 @@ class _AddReportState extends State<AddReport> {
             style: ElevatedButton.styleFrom(
               primary: corPrincipal,
             ),
-            onPressed: () {}, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
+            onPressed: () {
+              Report report =
+                  Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text);
+              _firebaseFirestore
+                  .collection("report")
+                  .doc(report.id)
+                  .set(report.toMap());
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TimelineScreen(user: user)));
+            }, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
             //TODO: DO JEITO QUE ESTÁ TÁ PUBLICANDO DIRETO
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -235,5 +259,4 @@ class _AddReportState extends State<AddReport> {
       ),
     );
   }
-
 }
