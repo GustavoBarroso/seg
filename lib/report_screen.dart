@@ -205,7 +205,7 @@ class _AddReportState extends State<AddReport> {
             ),
             onPressed: () async {
               Report report =
-              Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text);
+              Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text, urlPhoto: urlPhoto!);
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)
