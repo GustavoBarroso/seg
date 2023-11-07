@@ -235,16 +235,16 @@ class _AddReportState extends State<AddReport> {
             style: ElevatedButton.styleFrom(
               primary: corPrincipal,
             ),
-            onPressed: () {
+            onPressed: () async {
               Report report =
                   Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text);
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)
                   .set(report.toMap());
-              Navigator.push(
+              /*await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => TimelineScreen(user: user)));
+                  MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
             }, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
             //TODO: DO JEITO QUE ESTÁ TÁ PUBLICANDO DIRETO
             child: Row(
