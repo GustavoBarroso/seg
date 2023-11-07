@@ -36,6 +36,8 @@ class _AddReportState extends State<AddReport> {
     'Incêndio',
     'Via interditada',
     'Falta de energia',
+    'Assalto',
+    'Problemas com transporte público',
     'Outros'
   ];
 
@@ -76,8 +78,8 @@ class _AddReportState extends State<AddReport> {
     ImagePicker imagePicker = ImagePicker();
     XFile? image = await imagePicker.pickImage(
       source: source,
-      maxHeight: 1200,
-      maxWidth: 1200,
+      maxHeight: 900,
+      maxWidth: 900,
       imageQuality: 50,
     );
 
@@ -175,8 +177,8 @@ class _AddReportState extends State<AddReport> {
             ),
 
             SizedBox(
-              height: 400, // Defina a altura máxima que você deseja
-              width: 400, // Defina a largura máxima que você deseja
+              height: 450, // Defina a altura máxima que você deseja
+              width: 450, // Defina a largura máxima que você deseja
               child: urlPhoto != null
                   ? ClipRect(
                 child: Align(
