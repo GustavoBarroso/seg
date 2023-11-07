@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:seg/services/storage_service.dart';
-import '../Drawer.dart';
+import 'Drawer.dart';
 import 'package:image_picker/image_picker.dart';
-import '../component/show_snackbar.dart';
+import 'component/show_snackbar.dart';
 
 String? urlPhoto;
 
@@ -60,7 +60,7 @@ class _StorageScreenState extends State<StorageScreen> {
                   fontFamily: 'Arial', color: corPrincipal, fontSize: 26.0),
             ),
             Text((widget.user.email!),
-                style: TextStyle(fontFamily: 'Arial', fontSize: 12.0)),
+                style: TextStyle(fontSize: 12.0)),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

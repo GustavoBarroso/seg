@@ -19,7 +19,7 @@ class AddReport extends StatefulWidget {
 }
 
 class _AddReportState extends State<AddReport> {
-  final List<Report> listReport = [];
+  List<Report> listReport = [];
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
 
   Color corPrincipal = Color(0xFF243D7E);
@@ -126,6 +126,7 @@ class _AddReportState extends State<AddReport> {
               controller: descricaoController,
               maxLines: null,
               decoration: InputDecoration(labelText: 'Descrição'),
+
             ),
             TextField(
               controller: localizacaoController,
@@ -205,11 +206,12 @@ class _AddReportState extends State<AddReport> {
             ),
             onPressed: () async {
               Report report =
-              Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text, urlPhoto: urlPhoto!);
+              Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto);
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)
-                  .set(report.toMap()); //TODO: ADICONAR URL DE DOWNLOAD DA FOTO NO BANCO
+                  .set(report.toMap());
+
               /*await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
@@ -227,5 +229,4 @@ class _AddReportState extends State<AddReport> {
       ),
     );
   }
-
 }

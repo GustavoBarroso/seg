@@ -1,9 +1,9 @@
 class Report {
   late String id;
   late String descricao;
-  late String incidente;
+  late String? incidente;
   late String localizacao;
-  late String urlPhoto;
+  late String? urlPhoto;
 
   Report({required this.id, required this.descricao, required this.incidente, required this.localizacao, required this.urlPhoto});
 

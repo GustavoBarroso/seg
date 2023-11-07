@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:seg/EmergenciaScreen.dart';
 import 'package:seg/services/auth_service.dart';
 import 'package:seg/component/show_confirm_password.dart';
-import 'package:seg/storage/storage_screen.dart';
+import 'package:seg/storage_screen.dart';
 import 'package:seg/timeline_screen.dart';
 
 class CustomDrawer extends StatefulWidget {
