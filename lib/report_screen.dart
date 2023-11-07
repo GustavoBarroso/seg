@@ -1,14 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
 import 'dart:io';
 import 'dart:convert';
 import 'package:seg/services/storage_service.dart';
+import 'package:seg/timeline_screen.dart';
+import 'package:uuid/uuid.dart';
 
+import 'component/report.dart';
 import 'component/show_snackbar.dart';
 
 void main() => runApp(MaterialApp(home: AddReport()));
+
+late final User user;
 
 class AddReport extends StatefulWidget {
   @override
@@ -16,11 +25,13 @@ class AddReport extends StatefulWidget {
 }
 
 class _AddReportState extends State<AddReport> {
+  final List<Report> listReport = [];
+  FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
-  bool _buttonsVisible = true;
-  File? _imageFile;
+  File? _image;
   String? urlPhoto;
   String? _incidenteSelecionado;
 
@@ -28,9 +39,9 @@ class _AddReportState extends State<AddReport> {
     'Alagamento',
     'Engarrafamento',
     'Incêndio',
-    'Via interditada',
-    'Falta de energia',
+    'Via Interditada',
     'Outros'
+    // Adicione mais incidentes conforme necessário
   ];
 
   @override
@@ -45,7 +56,8 @@ class _AddReportState extends State<AddReport> {
         desiredAccuracy: LocationAccuracy.high,
       );
 
-      Uri url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
+      Uri url = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -66,41 +78,85 @@ class _AddReportState extends State<AddReport> {
     }
   }
 
-  Future<void> _uploadImage(ImageSource source) async {
-    ImagePicker imagePicker = ImagePicker();
-    XFile? image = await imagePicker.pickImage(
-      source: source,
-      maxHeight: 1200,
-      maxWidth: 1200,
-      imageQuality: 50,
-    );
+  /*Future<void> _getImageFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-    if (image != null) {
-      try {
-        String urlDownload = await StorageService().uploadReport(
-          File: File(image.path),
-          fileName: DateTime.now().toString(),
-        );
-        setState(() {
-          urlPhoto = urlDownload;
-          _imageFile = File(image.path);
-          _buttonsVisible = false; // Oculta os botões após a seleção da imagem
-        });
-      } catch (error) {
-        // Lidar com erros de upload, se necessário
-        print("Erro ao fazer upload da imagem: $error");
-      }
-    } else {
-      showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
+      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
+
+      setState(() {
+        _image = croppedFile;
+      });
     }
   }
 
-  void uploadImageCamera() {
-    _uploadImage(ImageSource.camera);
+  Future<void> _getImageFromCamera() async {
+    final picker = ImagePicker();
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      final bytes = await pickedFile.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+      final croppedImage = img.copyResizeCropSquare(decodedImage!, 500);
+      final croppedFile = File(pickedFile.path)..writeAsBytesSync(img.encodePng(croppedImage));
+
+      setState(() {
+        _image = croppedFile;
+      });
+    }
+  }*/
+
+  uploadImageCamera() {
+    ImagePicker imagePicker = ImagePicker();
+    imagePicker
+        .pickImage(
+            source: ImageSource.camera,
+            maxHeight: 1000,
+            maxWidth: 1000,
+            imageQuality: 50)
+        .then((XFile? image) {
+      if (image != null) {
+        StorageService()
+            .uploadReport(
+                File: File(image.path), fileName: DateTime.now().toString())
+            .then((String urlDownload) {
+          setState(() {
+            urlPhoto = urlDownload;
+          });
+          //refresh();
+        });
+      } else {
+        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
+      }
+    });
   }
 
-  void uploadImageGallery() {
-    _uploadImage(ImageSource.gallery);
+  uploadImageGallery() {
+    ImagePicker imagePicker = ImagePicker();
+    imagePicker
+        .pickImage(
+            source: ImageSource.gallery,
+            maxHeight: 1000,
+            maxWidth: 1000,
+            imageQuality: 50)
+        .then((XFile? image) {
+      if (image != null) {
+        StorageService()
+            .uploadReport(
+                File: File(image.path), fileName: DateTime.now().toString())
+            .then((String urlDownload) {
+          setState(() {
+            urlPhoto = urlDownload;
+          });
+          //refresh();
+        });
+      } else {
+        showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
+      }
+    });
   }
 
   @override
@@ -144,46 +200,28 @@ class _AddReportState extends State<AddReport> {
               }).toList(),
             ),
             SizedBox(height: 20),
+            //urlPhoto != null ? Image.file(urlPhoto! as File) : Container(),
+            SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageGallery,
-                    icon: Icon(Icons.photo),
-                    label: Text('Galeria'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageCamera,
-                    icon: Icon(Icons.add_a_photo_rounded),
-                    label: Text('Câmera'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-              ],
-            ),
-
-            SizedBox(
-              height: 400, // Defina a altura máxima que você deseja
-              width: 400, // Defina a largura máxima que você deseja
-              child: urlPhoto != null
-                  ? ClipRect(
-                child: Align(
-                  alignment: Alignment.center,
-                  widthFactor: 1.0,
-                  heightFactor: 1.0,
-                  child: Image.network(
-                    urlPhoto!,
-                    fit: BoxFit.cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
+                ElevatedButton.icon(
+                  onPressed: uploadImageGallery,
+                  icon: Icon(Icons.photo),
+                  label: Text('Galeria'),
+                  style: ElevatedButton.styleFrom(
+                    primary: corPrincipal,
                   ),
                 ),
-              )
-                  : Container(),
+                ElevatedButton.icon(
+                  onPressed: uploadImageCamera,
+                  icon: Icon(Icons.add_a_photo_rounded),
+                  label: Text('Câmera'),
+                  style: ElevatedButton.styleFrom(
+                    primary: corPrincipal,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -197,7 +235,17 @@ class _AddReportState extends State<AddReport> {
             style: ElevatedButton.styleFrom(
               primary: corPrincipal,
             ),
-            onPressed: () {}, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
+            onPressed: () async {
+              Report report =
+                  Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado!, localizacao: localizacaoController.text);
+              _firebaseFirestore
+                  .collection("report")
+                  .doc(report.id)
+                  .set(report.toMap()); //TODO: ADICONAR URL DE DOWNLOAD DA FOTO NO BANCO
+              /*await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
+            }, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
             //TODO: DO JEITO QUE ESTÁ TÁ PUBLICANDO DIRETO
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -211,5 +259,4 @@ class _AddReportState extends State<AddReport> {
       ),
     );
   }
-
 }
