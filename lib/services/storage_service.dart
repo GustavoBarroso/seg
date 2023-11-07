@@ -10,7 +10,7 @@ class StorageService {
   Future<String> upload({required File, required String fileName}) async {
     await _firebaseStorage.ref("$pathService/$fileName.png").putFile(File);
     String url = await _firebaseStorage
-        .ref("$pathService/$fileName.png")
+        .ref("profiles/$pathService/$fileName.png")
         .getDownloadURL();
         await _firebaseAuth.currentUser!.updatePhotoURL(url);
     return url;
@@ -18,7 +18,7 @@ class StorageService {
 
   Future<String> getDownloadUrlByFileName({required String fileName}) async {
     return await _firebaseStorage
-        .ref("$pathService/$fileName.png")
+        .ref("profiles/$pathService/$fileName.png")
         .getDownloadURL();
   }
 

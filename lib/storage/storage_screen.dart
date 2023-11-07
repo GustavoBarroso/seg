@@ -43,17 +43,26 @@ class _StorageScreenState extends State<StorageScreen> {
           children: [
             (urlPhoto != null)
                 ? ClipRRect(
-                borderRadius: BorderRadius.circular(128),
-                child: Image.network(
-                  urlPhoto!,
-                  height: 256,
-                  width: 256,
-                  fit: BoxFit.cover,
-                ))
+                    borderRadius: BorderRadius.circular(128),
+                    child: Image.network(
+                      urlPhoto!,
+                      height: 256,
+                      width: 256,
+                      fit: BoxFit.cover,
+                    ))
                 : const CircleAvatar(
-              radius: 128,
-              child: Icon(Icons.person),
+                    radius: 128,
+                    child: Icon(Icons.person),
+                  ),
+            const SizedBox(height: 16.0),
+            Text(
+              (widget.user.displayName != null) ? widget.user.displayName! : "",
+              style: TextStyle(
+                  fontFamily: 'Arial', color: corPrincipal, fontSize: 26.0),
             ),
+            Text((widget.user.email!),
+                style: TextStyle(fontFamily: 'Arial', fontSize: 12.0)),
+            const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -81,15 +90,14 @@ class _StorageScreenState extends State<StorageScreen> {
     );
   }
 
-
   uploadImage() {
     ImagePicker imagePicker = ImagePicker();
     imagePicker
         .pickImage(
-        source: ImageSource.gallery,
-        maxHeight: 2000,
-        maxWidth: 2000,
-        imageQuality: 50)
+            source: ImageSource.gallery,
+            maxHeight: 2000,
+            maxWidth: 2000,
+            imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
         StorageService()

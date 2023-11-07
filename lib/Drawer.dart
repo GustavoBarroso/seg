@@ -59,13 +59,13 @@ class _CustomDrawer extends State<CustomDrawer> {
             },
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
-            title: const Text("Perfil"),
+            leading: Icon(Icons.photo),
+            title: const Text("Mudar foto de perfil"),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => StorageScreen(user: widget.user)),
+                    builder: (context) => StorageScrenn(user: widget.user)),
               );
             },
           ),

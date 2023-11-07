@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontFamily: 'Arial',
                       color: corPrincipal,
                       fontSize: 30.0)),
-              Text('Compartilhando Cuidado, Construindo Confiança',
+              const Text('Compartilhando Cuidado, Construindo Confiança',
                   style: TextStyle(color: Colors.grey, fontSize: 16.0)),
               SizedBox(height: 30.0),
               Padding(
