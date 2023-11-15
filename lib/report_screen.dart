@@ -227,8 +227,7 @@ class _AddReportState extends State<AddReport> {
               /*await Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
-            }, //TODO: COLOCAR AQUI O MÉTODO DE PUBLICAÇÃO DA IMAGEM
-            //TODO: DO JEITO QUE ESTÁ TÁ PUBLICANDO DIRETO
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

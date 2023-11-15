@@ -22,35 +22,30 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   @override
   void initState() {
-    //refresh();
     super.initState();
+    refresh(); // Chame refresh no initState para preencher a lista inicialmente
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(user: widget.user), // Use o drawer personalizado
+      drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
         toolbarHeight: 50,
         elevation: 0.0,
         backgroundColor: corPrincipal,
       ),
       body: RefreshIndicator(
-        onRefresh: () {
-          return refresh();
-        },
-        //child: SingleChildScrollView(
-          child: ListView(
-            children: List.generate(listReport.length, (index) {
-              Report model = listReport[index];
-              return ListTile(
-                title: Text(model.descricao),
-
-              );
-            })
-
-          ),
-        //),
+        onRefresh: refresh,
+        child: ListView.builder(
+          itemCount: listReport.length,
+          itemBuilder: (context, index) {
+            Report model = listReport[index];
+            return ListTile(
+              title: Text(model.descricao),
+            );
+          },
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -65,16 +60,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
     );
   }
 
-  Future<List<Report>> refresh() async {
+  Future<void> refresh() async {
     List<Report> temp = [];
 
-    QuerySnapshot<Map<String, dynamic>> snapshot = await _firebaseFirestore.collection("report").get();
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+    await _firebaseFirestore.collection("report").get();
 
     for (var doc in snapshot.docs) {
       temp.add(Report.fromMap(doc.data()));
     }
 
-    return temp;
+    setState(() {
+      listReport = temp;
+    });
   }
-
 }

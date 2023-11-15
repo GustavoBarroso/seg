@@ -21,9 +21,12 @@ Future<Widget> checkPermissionAndReturnScreen() async {
 }
 
 Widget buildPermissionDeniedScreen() {
+  Color corPrincipal = Color(0xFF243D7E);
+
   return Scaffold(
     appBar: AppBar(
       title: Text('Permissão Negada'),
+      backgroundColor: corPrincipal,
     ),
     body: Center(
       child: Padding(
@@ -40,6 +43,9 @@ Widget buildPermissionDeniedScreen() {
               onPressed: () {
                 openAppSettings(); // Abre as configurações do aplicativo
               },
+              style: ElevatedButton.styleFrom(
+                primary: corPrincipal,
+              ),
               child: Text('Abrir Configurações'),
             ),
             SizedBox(height: 40),
