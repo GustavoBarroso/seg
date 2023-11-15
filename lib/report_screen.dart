@@ -224,9 +224,7 @@ class _AddReportState extends State<AddReport> {
                   .doc(report.id)
                   .set(report.toMap());
 
-              /*await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TimelineScreen(user: user))); TODO: RETORNAR PARA O TIMELINE*/
+              Navigator.pop(context);
             },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
