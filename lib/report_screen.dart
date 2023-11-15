@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
@@ -21,6 +22,7 @@ class AddReport extends StatefulWidget {
 class _AddReportState extends State<AddReport> {
   List<Report> listReport = [];
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  User? user = FirebaseAuth.instance.currentUser!;
 
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
@@ -29,6 +31,7 @@ class _AddReportState extends State<AddReport> {
   File? _imageFile;
   String? urlPhoto;
   String? _incidenteSelecionado;
+
 
   List<String> incidentes = [
     'Alagamento',
@@ -217,8 +220,11 @@ class _AddReportState extends State<AddReport> {
                   // Handle upload errors
                 }
               }
+
+              String? username = user!.displayName;
+
               Report report =
-              Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto);
+              Report(id: const Uuid().v1(), username: username!,descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto);
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)
