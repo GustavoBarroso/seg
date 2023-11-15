@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:seg/services/storage_service.dart';
-import 'Drawer.dart';
 import 'package:image_picker/image_picker.dart';
 import 'component/show_snackbar.dart';
 
@@ -29,7 +28,6 @@ class _StorageScreenState extends State<StorageScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
         title: const Text("Perfil"),
         toolbarHeight: 50,

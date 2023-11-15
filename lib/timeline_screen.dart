@@ -9,7 +9,7 @@ import 'drawer.dart';
 class TimelineScreen extends StatefulWidget {
   final User user;
 
-  const TimelineScreen({super.key, required this.user});
+  const TimelineScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   _TimelineScreenState createState() => _TimelineScreenState();
@@ -17,13 +17,13 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   Color corPrincipal = Color(0xFF243D7E);
-  List<Report> listReport = [];
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+  List<Report> listReport = []; // Declaração da lista
 
   @override
   void initState() {
     super.initState();
-    refresh(); // Chame refresh no initState para preencher a lista inicialmente
+    refresh();
   }
 
   @override
@@ -35,17 +35,32 @@ class _TimelineScreenState extends State<TimelineScreen> {
         elevation: 0.0,
         backgroundColor: corPrincipal,
       ),
-      body: RefreshIndicator(
-        onRefresh: refresh,
-        child: ListView.builder(
-          itemCount: listReport.length,
-          itemBuilder: (context, index) {
-            Report model = listReport[index];
-            return ListTile(
-              title: Text(model.descricao),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firebaseFirestore.collection("report").snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Erro: ${snapshot.error}');
+          } else {
+            listReport = snapshot.data!.docs
+                .map((doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
+                .toList();
+
+            return RefreshIndicator(
+              onRefresh: refresh,
+              child: ListView.builder(
+                itemCount: listReport.length,
+                itemBuilder: (context, index) {
+                  Report model = listReport[index];
+                  return ListTile(
+                    title: Text(model.descricao),
+                  );
+                },
+              ),
             );
-          },
-        ),
+          }
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -67,7 +82,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     await _firebaseFirestore.collection("report").get();
 
     for (var doc in snapshot.docs) {
-      temp.add(Report.fromMap(doc.data()));
+      temp.add(Report.fromMap(doc.data() as Map<String, dynamic>));
     }
 
     setState(() {
