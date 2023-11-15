@@ -84,20 +84,10 @@ class _AddReportState extends State<AddReport> {
     );
 
     if (image != null) {
-      try {
-        String urlDownload = await StorageService().uploadReport(
-          File: File(image.path),
-          fileName: DateTime.now().toString(),
-        );
-        setState(() {
-          urlPhoto = urlDownload;
-          _imageFile = File(image.path);
-          _buttonsVisible = false; // Oculta os botões após a seleção da imagem
-        });
-      } catch (error) {
-        // Lidar com erros de upload, se necessário
-        print("Erro ao fazer upload da imagem: $error");
-      }
+      setState(() {
+        _imageFile = File(image.path);
+        _buttonsVisible = false;
+      });
     } else {
       showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
     }
@@ -153,6 +143,7 @@ class _AddReportState extends State<AddReport> {
               }).toList(),
             ),
             SizedBox(height: 20),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -180,7 +171,12 @@ class _AddReportState extends State<AddReport> {
             SizedBox(
               height: 450, // Defina a altura máxima que você deseja
               width: 450, // Defina a largura máxima que você deseja
-              child: urlPhoto != null
+              child: _imageFile != null
+                  ? Image.file(
+                _imageFile!,
+                fit: BoxFit.cover,
+              )
+                  : urlPhoto != null
                   ? ClipRect(
                 child: Align(
                   alignment: Alignment.center,
@@ -207,6 +203,20 @@ class _AddReportState extends State<AddReport> {
               primary: corPrincipal,
             ),
             onPressed: () async {
+              if (_imageFile != null) {
+                try {
+                  String urlDownload = await StorageService().uploadReport(
+                    File: _imageFile!,
+                    fileName: DateTime.now().toString(),
+                  );
+                  setState(() {
+                    urlPhoto = urlDownload;
+                  });
+                } catch (error) {
+                  print("Erro ao fazer upload da imagem: $error");
+                  // Handle upload errors
+                }
+              }
               Report report =
               Report(id: const Uuid().v1(), descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto);
               _firebaseFirestore
