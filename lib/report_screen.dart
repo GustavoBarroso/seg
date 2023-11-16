@@ -224,7 +224,7 @@ class _AddReportState extends State<AddReport> {
               String? username = user!.displayName;
 
               Report report =
-              Report(id: const Uuid().v1(), username: username!,descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto);
+              Report(id: const Uuid().v1(), username: username!,descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto, timestamp: Timestamp.now());
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)

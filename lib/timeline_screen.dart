@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'component/report.dart';
 import 'report_screen.dart';
 import 'drawer.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class TimelineScreen extends StatefulWidget {
   final User user;
@@ -18,7 +19,7 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   Color corPrincipal = Color(0xFF243D7E);
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
-  List<Report> listReport = []; // Declaração da lista
+  List<Report> listReport = [];
 
   @override
   void initState() {
@@ -43,18 +44,75 @@ class _TimelineScreenState extends State<TimelineScreen> {
           } else if (snapshot.hasError) {
             return Text('Erro: ${snapshot.error}');
           } else {
-            listReport = snapshot.data!.docs
+            // Converta a lista de documentos para uma lista de Report
+            List<Report> reports = snapshot.data!.docs
                 .map((doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
                 .toList();
+
+            // Ordenar a lista de mais novo para mais antigo
+            reports.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
             return RefreshIndicator(
               onRefresh: refresh,
               child: ListView.builder(
-                itemCount: listReport.length,
+                itemCount: reports.length,
                 itemBuilder: (context, index) {
-                  Report model = listReport[index];
-                  return ListTile(
-                    title: Text(model.descricao),
+                  Report model = reports[index];
+
+                  // Calcula o tempo decorrido desde a publicação
+                  String timeAgo = timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
+
+                  return Container(
+                    margin: EdgeInsets.all(8),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ListTile(
+                            title: Text(
+                              model.username,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Arial',
+                                color: corPrincipal,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    timeAgo, // Exibe o tempo decorrido desde a publicação
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    model.descricao,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (model.urlPhoto != null && model.urlPhoto!.isNotEmpty)
+                            Image.network(
+                              model.urlPhoto!,
+                              fit: BoxFit.cover,
+                            ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
@@ -84,6 +142,9 @@ class _TimelineScreenState extends State<TimelineScreen> {
     for (var doc in snapshot.docs) {
       temp.add(Report.fromMap(doc.data() as Map<String, dynamic>));
     }
+
+    // Ordenar a lista de mais novo para mais antigo
+    temp.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     setState(() {
       listReport = temp;
