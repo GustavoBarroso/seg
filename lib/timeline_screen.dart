@@ -32,6 +32,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     return Scaffold(
       drawer: CustomDrawer(user: widget.user),
       appBar: AppBar(
+        title: Text("SEG"),
         toolbarHeight: 50,
         elevation: 0.0,
         backgroundColor: corPrincipal,
