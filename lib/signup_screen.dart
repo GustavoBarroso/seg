@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:seg/component/show_snackbar.dart';
 import 'package:seg/services/auth_service.dart';
+import 'package:seg/terms_of_use.dart';
 
 AuthService authService = AuthService();
 
@@ -17,6 +18,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _isTermsAccepted = false;
 
   @override
   void dispose() {
@@ -32,6 +34,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         toolbarHeight: 160,
         elevation: 0.0,
@@ -138,10 +141,31 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               SizedBox(height: 12.0),
-              ElevatedButton(
-                onPressed: () {
-                  enviarClicado();
+              // Checkbox para concordar com os termos
+              CheckboxListTile(
+                title: GestureDetector(
+                  onTap: () {
+                    _showTermsDialog(context);
+                  },
+                  child: Text(
+                    'Li e concordo com os termos de uso',
+                    style: TextStyle(
+                      color: corPrincipal,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                value: _isTermsAccepted,
+                onChanged: (value) {
+                  setState(() {
+                    _isTermsAccepted = value!;
+                  });
                 },
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+              SizedBox(height: 12.0),
+              ElevatedButton(
+                onPressed: _isTermsAccepted ? () => enviarClicado() : null,
                 child: Text("Cadastrar"),
                 style: ElevatedButton.styleFrom(
                   primary: corPrincipal,
@@ -183,5 +207,29 @@ class _SignupScreenState extends State<SignupScreen> {
     } else {
       showSnackBar(context: context, mensage: "As senhas não coincidem");
     }
+  }
+
+  _showTermsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Termos de Uso do SEG'),
+          content: SingleChildScrollView(
+            child: Text(
+              termsContent, // Use a variável ou função definida no arquivo terms_of_use.dart
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Fechar'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
