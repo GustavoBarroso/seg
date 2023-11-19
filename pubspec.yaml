@@ -59,6 +59,8 @@ dependencies:
 
   timeago: ^3.6.0
 
+  flutter_rating_bar: ^4.0.0
+
 
 dev_dependencies:
   flutter_test:

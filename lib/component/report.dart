@@ -39,4 +39,9 @@ class Report {
       "timestamp": timestamp, // Adicionando timestamp ao mapeamento
     };
   }
+
+  String formatarLocalizacaoSimplificada() {
+    List<String> partes = localizacao.split(',').map((e) => e.trim()).take(4).toList();
+    return partes.join(', '); // Junta os quatro primeiros elementos com uma vírgula e um espaço
+  }
 }

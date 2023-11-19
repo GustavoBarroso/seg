@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'component/report.dart';
 import 'report_screen.dart';
 import 'drawer.dart';
@@ -18,6 +19,7 @@ class TimelineScreen extends StatefulWidget {
 
 class _TimelineScreenState extends State<TimelineScreen> {
   Color corPrincipal = Color(0xFF243D7E);
+  Color corIncidente = Colors.black.withOpacity(0.7);
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   List<Report> listReport = [];
 
@@ -45,12 +47,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
           } else if (snapshot.hasError) {
             return Text('Erro: ${snapshot.error}');
           } else {
-            // Converta a lista de documentos para uma lista de Report
             List<Report> reports = snapshot.data!.docs
                 .map((doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
                 .toList();
 
-            // Ordenar a lista de mais novo para mais antigo
             reports.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
             return RefreshIndicator(
@@ -60,7 +60,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 itemBuilder: (context, index) {
                   Report model = reports[index];
 
-                  // Calcula o tempo decorrido desde a publicação
                   String timeAgo = timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
 
                   return Container(
@@ -78,8 +77,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             title: Text(
                               model.username,
                               style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Arial',
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                                 color: corPrincipal,
                               ),
                             ),
@@ -89,7 +88,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    timeAgo, // Exibe o tempo decorrido desde a publicação
+                                    timeAgo,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Colors.grey,
@@ -97,9 +96,17 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   ),
                                   SizedBox(height: 4),
                                   Text(
-                                    model.descricao,
+                                    'Incidente: ${model.incidente}',
                                     style: TextStyle(
-                                      fontSize: 14,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: corIncidente,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Descrição: ${model.descricao}',
+                                    style: TextStyle(
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ],
@@ -111,6 +118,39 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               model.urlPhoto!,
                               fit: BoxFit.cover,
                             ),
+                          SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Localização: ${model.formatarLocalizacaoSimplificada()}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                RatingBar.builder(
+                                  initialRating: 0,
+                                  minRating: 0,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: false,
+                                  itemCount: 5,
+                                  itemSize: 34,
+                                  itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: corPrincipal,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    // logica pra jogar a nota no firestore
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -144,7 +184,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
       temp.add(Report.fromMap(doc.data() as Map<String, dynamic>));
     }
 
-    // Ordenar a lista de mais novo para mais antigo
     temp.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     setState(() {
