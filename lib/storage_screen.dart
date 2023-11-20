@@ -25,6 +25,11 @@ class _StorageScreenState extends State<StorageScreen> {
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
+  void initState() {
+    super.initState();
+    refresh();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,8 +62,7 @@ class _StorageScreenState extends State<StorageScreen> {
               style: TextStyle(
                   fontFamily: 'Arial', color: corPrincipal, fontSize: 26.0),
             ),
-            Text((widget.user.email!),
-                style: TextStyle(fontSize: 12.0)),
+            Text((widget.user.email!), style: TextStyle(fontSize: 12.0)),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -71,14 +75,14 @@ class _StorageScreenState extends State<StorageScreen> {
                     primary: corPrincipal,
                   ),
                 ),
-                ElevatedButton.icon(
+                /*ElevatedButton.icon(
                   onPressed: refresh,
                   icon: Icon(Icons.refresh),
                   label: Text('Atualizar'),
                   style: ElevatedButton.styleFrom(
                     primary: corPrincipal,
                   ),
-                ),
+                ),*/
               ],
             ),
           ],
@@ -103,12 +107,12 @@ class _StorageScreenState extends State<StorageScreen> {
           setState(() {
             urlPhoto = urlDownload;
           });
-          refresh();
         });
       } else {
         showSnackBar(context: context, mensage: "Nenhuma imagem selecionada.");
       }
     });
+    refresh();
   }
 
   refresh() {

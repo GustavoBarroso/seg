@@ -8,7 +8,7 @@ class StorageService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   Future<String> upload({required File, required String fileName}) async {
-    await _firebaseStorage.ref("$pathService/$fileName.png").putFile(File);
+    await _firebaseStorage.ref("profiles/$pathService/$fileName.png").putFile(File);
     String url = await _firebaseStorage
         .ref("profiles/$pathService/$fileName.png")
         .getDownloadURL();
