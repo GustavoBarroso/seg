@@ -20,6 +20,8 @@ class AddReport extends StatefulWidget {
 }
 
 class _AddReportState extends State<AddReport> {
+  double _latitude = 0.0;
+  double _longitude = 0.0;
   List<Report> listReport = [];
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser!;
@@ -55,6 +57,13 @@ class _AddReportState extends State<AddReport> {
       Position position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
+
+      setState(() {
+        localizacaoController.text =
+        'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+        _latitude = position.latitude;
+        _longitude = position.longitude;
+      });
 
       Uri url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
       final response = await http.get(url);
@@ -224,7 +233,17 @@ class _AddReportState extends State<AddReport> {
               String? username = user!.displayName;
 
               Report report =
-              Report(id: const Uuid().v1(), username: username!,descricao: descricaoController.text, incidente: _incidenteSelecionado, localizacao: localizacaoController.text, urlPhoto: urlPhoto, timestamp: Timestamp.now());
+              Report(id: const Uuid().v1(),
+                  username: username!,
+                  descricao: descricaoController.text,
+                  incidente: _incidenteSelecionado,
+                  localizacao: localizacaoController.text,
+                  latitude: _latitude,
+                  longitude: _longitude,
+                  distance: 0.0,
+                  urlPhoto: urlPhoto,
+                  timestamp: Timestamp.now());
+
               _firebaseFirestore
                   .collection("report")
                   .doc(report.id)

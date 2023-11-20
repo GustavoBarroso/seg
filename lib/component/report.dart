@@ -7,7 +7,10 @@ class Report {
   late String? incidente;
   late String localizacao;
   late String? urlPhoto;
-  late Timestamp timestamp; // Mantendo o tipo como Timestamp
+  late double latitude;
+  late double longitude;
+  late double distance;
+  late Timestamp timestamp;
 
   Report({
     required this.id,
@@ -16,6 +19,9 @@ class Report {
     required this.incidente,
     required this.localizacao,
     required this.urlPhoto,
+    required this.latitude,
+    required this.longitude,
+    required this.distance,
     required this.timestamp,
   });
 
@@ -26,7 +32,10 @@ class Report {
         incidente = map["incidente"],
         localizacao = map["localizacao"],
         urlPhoto = map["urlPhoto"],
-        timestamp = map["timestamp"] ?? Timestamp.now(); // Se timestamp for nulo, use Timestamp.now()
+        latitude = (map["latitude"] as num?)?.toDouble() ?? 0.0,
+        longitude = (map["longitude"] as num?)?.toDouble() ?? 0.0,
+        distance = (map["distance"] as num?)?.toDouble() ?? 0.0,
+        timestamp = map["timestamp"] ?? Timestamp.now();
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,12 +45,42 @@ class Report {
       "incidente": incidente,
       "localizacao": localizacao,
       "urlPhoto": urlPhoto,
-      "timestamp": timestamp, // Adicionando timestamp ao mapeamento
+      "latitude": latitude,
+      "longitude": longitude,
+      "distance": distance,
+      "timestamp": timestamp,
     };
   }
 
+  Report copyWith({
+    String? id,
+    String? username,
+    String? descricao,
+    String? incidente,
+    String? localizacao,
+    String? urlPhoto,
+    double? latitude,
+    double? longitude,
+    double? distance,
+    Timestamp? timestamp,
+  }) {
+    return Report(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      descricao: descricao ?? this.descricao,
+      incidente: incidente ?? this.incidente,
+      localizacao: localizacao ?? this.localizacao,
+      urlPhoto: urlPhoto ?? this.urlPhoto,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      distance: distance ?? this.distance,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
+
   String formatarLocalizacaoSimplificada() {
-    List<String> partes = localizacao.split(',').map((e) => e.trim()).take(4).toList();
-    return partes.join(', '); // Junta os quatro primeiros elementos com uma vírgula e um espaço
+    List<String> partes =
+    localizacao.split(',').map((e) => e.trim()).take(4).toList();
+    return partes.join(', ');
   }
 }

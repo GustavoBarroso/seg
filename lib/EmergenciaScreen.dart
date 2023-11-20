@@ -16,7 +16,7 @@ class BotaoEmergencia extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        _launchPhoneCall(phoneNumber);
+        _openPhoneDialer(phoneNumber);
       },
       style: ElevatedButton.styleFrom(
         primary: Color(0xFF243D7E),
@@ -32,12 +32,12 @@ class BotaoEmergencia extends StatelessWidget {
     );
   }
 
-  _launchPhoneCall(String phoneNumber) async {
+  _openPhoneDialer(String phoneNumber) async {
     final url = 'tel:$phoneNumber';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      throw 'Não foi possível realizar a ligação para $url';
+      print('Não foi possível abrir o discador com o número $phoneNumber');
     }
   }
 }

@@ -7,10 +7,12 @@ import 'component/report.dart';
 import 'report_screen.dart';
 import 'drawer.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'services/LocationService.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:math';
 
 class TimelineScreen extends StatefulWidget {
   final User user;
-
   const TimelineScreen({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -20,13 +22,31 @@ class TimelineScreen extends StatefulWidget {
 class _TimelineScreenState extends State<TimelineScreen> {
   Color corPrincipal = Color(0xFF243D7E);
   Color corIncidente = Colors.black.withOpacity(0.7);
+  double _latitude = 0.0;
+  double _longitude = 0.0;
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   List<Report> listReport = [];
+  LocationService _locationService = LocationService();
 
   @override
   void initState() {
     super.initState();
     refresh();
+    _obterLocalizacaoAtual();
+  }
+
+  Future<void> _obterLocalizacaoAtual() async {
+    try {
+      Position position = await _locationService.getLocalizacaoAtual();
+
+      setState(() {
+        _latitude = position.latitude ?? 0.0;
+        _longitude = position.longitude ?? 0.0;
+      });
+      await refresh();
+    } catch (e) {
+        print('Erro ao obter a localização: $e');
+    }
   }
 
   @override
@@ -104,7 +124,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     ),
                                   ),
                                   Text(
-                                    'Descrição: ${model.descricao}',
+                                    //Descrição
+                                    '${model.descricao}',
                                     style: TextStyle(
                                       fontSize: 16,
                                     ),
@@ -125,7 +146,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Localização: ${model.formatarLocalizacaoSimplificada()}',
+                                  //Localização
+                                  '${model.formatarLocalizacaoSimplificada()}',
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey,
@@ -178,16 +200,46 @@ class _TimelineScreenState extends State<TimelineScreen> {
     List<Report> temp = [];
 
     QuerySnapshot<Map<String, dynamic>> snapshot =
-    await _firebaseFirestore.collection("report").get();
+      await _firebaseFirestore.collection("report").get();
 
     for (var doc in snapshot.docs) {
-      temp.add(Report.fromMap(doc.data() as Map<String, dynamic>));
+
+      Report report = Report.fromMap(doc.data() as Map<String, dynamic>);
+
+      double distance = calculateDistance(
+          _latitude, _longitude, report.latitude ?? 0.0, report.longitude ?? 0.0);
+
+      temp.add(report.copyWith(distance: distance));
     }
 
-    temp.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    // Ordena a lista de reports com base na distância
+    temp.sort((a, b) => a.distance.compareTo(b.distance));
 
     setState(() {
       listReport = temp;
     });
   }
+
+// Haversine (calcular distancia entre 2 pontos)
+  double calculateDistance(
+      double lat1, double lon1, double lat2, double lon2) {
+    const R = 6371.0; // Raio da Terra em quilômetros
+
+    final dLat = _toRadians(lat2 - lat1);
+    final dLon = _toRadians(lon2 - lon1);
+
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_toRadians(lat1)) * cos(_toRadians(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    final distance = R * c;
+
+    return distance;
+  }
+
+  double _toRadians(double degree) {
+    return degree * (pi / 180.0);
+  }
+
 }
