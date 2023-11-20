@@ -231,10 +231,12 @@ class _AddReportState extends State<AddReport> {
               }
 
               String? username = user!.displayName;
+              String? useruid = user!.uid;
 
               Report report =
               Report(id: const Uuid().v1(),
                   username: username!,
+                  useruid: useruid,
                   descricao: descricaoController.text,
                   incidente: _incidenteSelecionado,
                   localizacao: localizacaoController.text,

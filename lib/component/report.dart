@@ -11,6 +11,7 @@ class Report {
   late double longitude;
   late double distance;
   late Timestamp timestamp;
+  late String? useruid;
 
   Report({
     required this.id,
@@ -23,11 +24,13 @@ class Report {
     required this.longitude,
     required this.distance,
     required this.timestamp,
+    required this.useruid,
   });
 
   Report.fromMap(Map<String, dynamic> map)
       : id = map["id"],
         username = map["username"],
+        useruid = map["useruid"],
         descricao = map["descricao"],
         incidente = map["incidente"],
         localizacao = map["localizacao"],
@@ -41,6 +44,7 @@ class Report {
     return {
       "id": id,
       "username": username,
+      "useruid": useruid,
       "descricao": descricao,
       "incidente": incidente,
       "localizacao": localizacao,
@@ -55,6 +59,7 @@ class Report {
   Report copyWith({
     String? id,
     String? username,
+    String? useruid,
     String? descricao,
     String? incidente,
     String? localizacao,
@@ -67,6 +72,7 @@ class Report {
     return Report(
       id: id ?? this.id,
       username: username ?? this.username,
+      useruid: useruid ?? this.useruid,
       descricao: descricao ?? this.descricao,
       incidente: incidente ?? this.incidente,
       localizacao: localizacao ?? this.localizacao,

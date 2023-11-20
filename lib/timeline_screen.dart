@@ -13,6 +13,7 @@ import 'dart:math';
 
 class TimelineScreen extends StatefulWidget {
   final User user;
+
   const TimelineScreen({Key? key, required this.user}) : super(key: key);
 
   @override
@@ -45,7 +46,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       });
       await refresh();
     } catch (e) {
-        print('Erro ao obter a localização: $e');
+      print('Erro ao obter a localização: $e');
     }
   }
 
@@ -68,7 +69,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
             return Text('Erro: ${snapshot.error}');
           } else {
             List<Report> reports = snapshot.data!.docs
-                .map((doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
+                .map(
+                    (doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
                 .toList();
 
             reports.sort((a, b) => b.timestamp.compareTo(a.timestamp));
@@ -80,7 +82,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 itemBuilder: (context, index) {
                   Report model = reports[index];
 
-                  String timeAgo = timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
+                  String timeAgo =
+                  timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
 
                   return Container(
                     margin: EdgeInsets.all(8),
@@ -134,7 +137,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               ),
                             ),
                           ),
-                          if (model.urlPhoto != null && model.urlPhoto!.isNotEmpty)
+                          if (model.urlPhoto != null &&
+                              model.urlPhoto!.isNotEmpty)
                             Image.network(
                               model.urlPhoto!,
                               fit: BoxFit.cover,
@@ -161,13 +165,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   allowHalfRating: false,
                                   itemCount: 5,
                                   itemSize: 34,
-                                  itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
-                                  itemBuilder: (context, _) => Icon(
-                                    Icons.star,
-                                    color: corPrincipal,
-                                  ),
+                                  itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 2.0),
+                                  itemBuilder: (context, _) =>
+                                      Icon(
+                                        Icons.star,
+                                        color: corPrincipal,
+                                      ),
                                   onRatingUpdate: (rating) {
-                                    // logica pra jogar a nota no firestore
+                                    storeRating(rating, model.useruid); // logica pra jogar a nota no firestore
                                   },
                                 ),
                               ],
@@ -200,14 +206,13 @@ class _TimelineScreenState extends State<TimelineScreen> {
     List<Report> temp = [];
 
     QuerySnapshot<Map<String, dynamic>> snapshot =
-      await _firebaseFirestore.collection("report").get();
+    await _firebaseFirestore.collection("report").get();
 
     for (var doc in snapshot.docs) {
-
       Report report = Report.fromMap(doc.data() as Map<String, dynamic>);
 
-      double distance = calculateDistance(
-          _latitude, _longitude, report.latitude ?? 0.0, report.longitude ?? 0.0);
+      double distance = calculateDistance(_latitude, _longitude,
+          report.latitude ?? 0.0, report.longitude ?? 0.0);
 
       temp.add(report.copyWith(distance: distance));
     }
@@ -221,15 +226,17 @@ class _TimelineScreenState extends State<TimelineScreen> {
   }
 
 // Haversine (calcular distancia entre 2 pontos)
-  double calculateDistance(
-      double lat1, double lon1, double lat2, double lon2) {
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371.0; // Raio da Terra em quilômetros
 
     final dLat = _toRadians(lat2 - lat1);
     final dLon = _toRadians(lon2 - lon1);
 
     final a = sin(dLat / 2) * sin(dLat / 2) +
-        cos(_toRadians(lat1)) * cos(_toRadians(lat2)) * sin(dLon / 2) * sin(dLon / 2);
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
 
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
 
@@ -242,4 +249,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
     return degree * (pi / 180.0);
   }
 
+  void storeRating(double rating, String? useruid) {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference ratings = firestore.collection('avaliacoes');
+
+    ratings.add({
+      'nota': rating,
+      'data': DateTime.now(),
+      'user': useruid,
+    });
+  }
 }
