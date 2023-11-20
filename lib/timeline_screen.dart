@@ -256,7 +256,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     ratings.add({
       'nota': rating,
       'data': DateTime.now(),
-      'user': useruid,
+      'useruid': useruid,
     });
   }
 }

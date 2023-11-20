@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:seg/services/storage_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'component/show_snackbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 String? urlPhoto;
 
@@ -24,6 +25,27 @@ class _StorageScreenState extends State<StorageScreen> {
   Color corPrincipal = Color(0xFF243D7E);
 
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
+  Future<double> calcularMedia(User user) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+    CollectionReference ratings = firestore.collection('avaliacoes');
+
+    QuerySnapshot querySnapshot = await ratings.where('useruid', isEqualTo: user.uid).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      double somaNotas = 0;
+      int quantidadeDocumentos = querySnapshot.docs.length;
+
+      for (QueryDocumentSnapshot document in querySnapshot.docs) {
+        somaNotas += document['nota'];
+      }
+
+      double media = somaNotas / quantidadeDocumentos;
+      return double.parse(media.toStringAsFixed(1));
+    } else {
+      return 5.0;
+    }
+  }
 
   void initState() {
     super.initState();
@@ -63,6 +85,28 @@ class _StorageScreenState extends State<StorageScreen> {
                   fontFamily: 'Arial', color: corPrincipal, fontSize: 26.0),
             ),
             Text((widget.user.email!), style: TextStyle(fontSize: 12.0)),
+
+            const SizedBox(height: 16.0),
+
+            FutureBuilder<double>(
+              future: calcularMedia(widget.user),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return CircularProgressIndicator();
+                } else if (snapshot.hasError) {
+                  return Text('Erro ao calcular a média: ${snapshot.error}');
+                } else {
+                  double media = snapshot.data ?? 0.0;
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 32.0),
+                      Text(' $media', style: TextStyle(fontSize: 20.0,fontFamily: 'Arial')),
+                    ],
+                  );
+                }
+              },
+            ),
             const SizedBox(height: 16.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -75,14 +119,6 @@ class _StorageScreenState extends State<StorageScreen> {
                     primary: corPrincipal,
                   ),
                 ),
-                /*ElevatedButton.icon(
-                  onPressed: refresh,
-                  icon: Icon(Icons.refresh),
-                  label: Text('Atualizar'),
-                  style: ElevatedButton.styleFrom(
-                    primary: corPrincipal,
-                  ),
-                ),*/
               ],
             ),
           ],
@@ -120,4 +156,6 @@ class _StorageScreenState extends State<StorageScreen> {
       urlPhoto = _firebaseAuth.currentUser!.photoURL;
     });
   }
+
+
 }
