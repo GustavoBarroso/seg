@@ -30,11 +30,11 @@ class _AddReportState extends State<AddReport> {
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
   TextEditingController localizacaoController = TextEditingController();
+  TextEditingController outrosIncidenteController = TextEditingController();
   bool _buttonsVisible = true;
   File? _imageFile;
   String? urlPhoto;
   String? _incidenteSelecionado;
-
 
   List<String> incidentes = [
     'Alagamento',
@@ -61,12 +61,13 @@ class _AddReportState extends State<AddReport> {
 
       setState(() {
         localizacaoController.text =
-        'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+            'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
         _latitude = position.latitude;
         _longitude = position.longitude;
       });
 
-      Uri url = Uri.parse('https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
+      Uri url = Uri.parse(
+          'https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.latitude}&lon=${position.longitude}');
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
@@ -123,95 +124,108 @@ class _AddReportState extends State<AddReport> {
         backgroundColor: corPrincipal,
         title: Text('Adicionar Report'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              controller: descricaoController,
-              maxLines: null,
-              decoration: InputDecoration(labelText: 'Descrição'),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                controller: descricaoController,
+                maxLines: null,
+                decoration: InputDecoration(labelText: 'Descrição'),
+              ),
+              TextField(
+                controller: localizacaoController,
+                readOnly: true,
+                decoration: InputDecoration(labelText: 'Localização'),
+              ),
+              SizedBox(height: 20),
+              DropdownButton<String>(
+                value: _incidenteSelecionado,
+                hint: Text('Selecione um tipo de incidente'),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _incidenteSelecionado = newValue;
 
-            ),
-            TextField(
-              controller: localizacaoController,
-              readOnly: true,
-              decoration: InputDecoration(labelText: 'Localização'),
-            ),
+                    // Limpar o campo de texto ao selecionar um valor diferente de "Outros"
+                    if (_incidenteSelecionado != 'Outros') {
+                      outrosIncidenteController.clear();
+                    }
+                  });
+                },
+                items: incidentes.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
 
-            SizedBox(height: 20),
-            DropdownButton<String>(
-              value: _incidenteSelecionado,
-              hint: Text('Selecione um tipo de incidente'),
-              onChanged: (String? newValue) {
-                setState(() {
-                  _incidenteSelecionado = newValue;
-                });
-              },
-              items: incidentes.map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-            SizedBox(height: 20),
-            CheckboxListTile(
-              title: Text('Reportar anonimamente'),
-              value: _reportAnonimo,
-              onChanged: (bool? value) {
-                setState(() {
-                  _reportAnonimo = value!;
-                });
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageGallery,
-                    icon: Icon(Icons.photo),
-                    label: Text('Galeria'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-                if (_buttonsVisible)
-                  ElevatedButton.icon(
-                    onPressed: uploadImageCamera,
-                    icon: Icon(Icons.add_a_photo_rounded),
-                    label: Text('Câmera'),
-                    style: ElevatedButton.styleFrom(
-                      primary: corPrincipal,
-                    ),
-                  ),
-              ],
-            ),
-
-            SizedBox(
-              height: 450, // Defina a altura máxima que você deseja
-              width: 450, // Defina a largura máxima que você deseja
-              child: _imageFile != null
-                  ? Image.file(
-                _imageFile!,
-                fit: BoxFit.cover,
-              )
-                  : urlPhoto != null
-                  ? ClipRect(
-                child: Align(
-                  alignment: Alignment.center,
-                  widthFactor: 1.0,
-                  heightFactor: 1.0,
-                  child: Image.network(
-                    urlPhoto!,
-                    fit: BoxFit.cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
-                  ),
+              // Adicionar um campo de texto para "Outros" condicionalmente
+              if (_incidenteSelecionado == 'Outros')
+                TextField(
+                  controller: outrosIncidenteController,
+                  decoration: InputDecoration(labelText: 'Especifique o incidente'),
                 ),
-              )
-                  : Container(),
-            ),
-          ],
+
+              SizedBox(height: 20),
+              CheckboxListTile(
+                title: Text('Reportar anonimamente'),
+                value: _reportAnonimo,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _reportAnonimo = value!;
+                  });
+                },
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  if (_buttonsVisible)
+                    ElevatedButton.icon(
+                      onPressed: uploadImageGallery,
+                      icon: Icon(Icons.photo),
+                      label: Text('Galeria'),
+                      style: ElevatedButton.styleFrom(
+                        primary: corPrincipal,
+                      ),
+                    ),
+                  if (_buttonsVisible)
+                    ElevatedButton.icon(
+                      onPressed: uploadImageCamera,
+                      icon: Icon(Icons.add_a_photo_rounded),
+                      label: Text('Câmera'),
+                      style: ElevatedButton.styleFrom(
+                        primary: corPrincipal,
+                      ),
+                    ),
+                ],
+              ),
+              SizedBox(
+                height: 450, // Defina a altura máxima que você deseja
+                width: 450, // Defina a largura máxima que você deseja
+                child: _imageFile != null
+                    ? Image.file(
+                        _imageFile!,
+                        fit: BoxFit.cover,
+                      )
+                    : urlPhoto != null
+                        ? ClipRect(
+                            child: Align(
+                              alignment: Alignment.center,
+                              widthFactor: 1.0,
+                              heightFactor: 1.0,
+                              child: Image.network(
+                                urlPhoto!,
+                                fit: BoxFit
+                                    .cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
+                              ),
+                            ),
+                          )
+                        : Container(),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: Align(
@@ -239,15 +253,16 @@ class _AddReportState extends State<AddReport> {
                 }
               }
 
-              String? username = _reportAnonimo ? "Report Anônimo" : user!.displayName;
+              String? username =
+                  _reportAnonimo ? "Report Anônimo" : user!.displayName;
               String? useruid = user!.uid;
 
-              Report report =
-              Report(id: const Uuid().v1(),
+              Report report = Report(
+                  id: const Uuid().v1(),
                   username: username!,
                   useruid: useruid,
                   descricao: descricaoController.text,
-                  incidente: _incidenteSelecionado,
+                  incidente: _incidenteSelecionado == 'Outros' ? outrosIncidenteController.text : _incidenteSelecionado,
                   localizacao: localizacaoController.text,
                   latitude: _latitude,
                   longitude: _longitude,
