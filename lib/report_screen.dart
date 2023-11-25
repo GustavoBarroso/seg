@@ -25,6 +25,7 @@ class _AddReportState extends State<AddReport> {
   List<Report> listReport = [];
   FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   User? user = FirebaseAuth.instance.currentUser!;
+  bool _reportAnonimo = false;
 
   Color corPrincipal = Color(0xFF243D7E);
   TextEditingController descricaoController = TextEditingController();
@@ -155,7 +156,15 @@ class _AddReportState extends State<AddReport> {
               }).toList(),
             ),
             SizedBox(height: 20),
-
+            CheckboxListTile(
+              title: Text('Reportar anonimamente'),
+              value: _reportAnonimo,
+              onChanged: (bool? value) {
+                setState(() {
+                  _reportAnonimo = value!;
+                });
+              },
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -230,7 +239,7 @@ class _AddReportState extends State<AddReport> {
                 }
               }
 
-              String? username = user!.displayName;
+              String? username = _reportAnonimo ? "Report Anônimo" : user!.displayName;
               String? useruid = user!.uid;
 
               Report report =
