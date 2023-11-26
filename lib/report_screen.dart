@@ -36,6 +36,7 @@ class _AddReportState extends State<AddReport> {
   String? urlPhoto;
   String? _incidenteSelecionado;
 
+
   List<String> incidentes = [
     'Alagamento',
     'Engarrafamento',
@@ -238,6 +239,13 @@ class _AddReportState extends State<AddReport> {
               primary: corPrincipal,
             ),
             onPressed: () async {
+              // Validar se os campos obrigatórios estão preenchidos
+              if (descricaoController.text.isEmpty || _incidenteSelecionado == null) {
+                // Mostrar um alerta ou mensagem informando ao usuário que os campos são obrigatórios
+                showSnackBar(context: context, mensage: "'Descrição' e 'Tipo de Incidente' são obrigatórios");
+                return;
+              }
+
               if (_imageFile != null) {
                 try {
                   String urlDownload = await StorageService().uploadReport(
