@@ -79,7 +79,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 itemBuilder: (context, index) {
                   Report model = reports[index];
                   String timeAgo =
-                      timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
+                  timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
                   return Container(
                     margin: EdgeInsets.all(8),
                     child: Card(
@@ -161,7 +161,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   itemCount: 5,
                                   itemSize: 34,
                                   itemPadding:
-                                      EdgeInsets.symmetric(horizontal: 2.0),
+                                  EdgeInsets.symmetric(horizontal: 2.0),
                                   itemBuilder: (context, _) => Icon(
                                     Icons.star,
                                     color: corPrincipal,
@@ -202,7 +202,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Future<void> refresh() async {
     List<Report> temp = [];
     QuerySnapshot<Map<String, dynamic>> snapshot =
-        await _firebaseFirestore.collection("report").get();
+    await _firebaseFirestore.collection("report").get();
     for (var doc in snapshot.docs) {
       Report report = Report.fromMap(doc.data() as Map<String, dynamic>);
       double distance = calculateDistance(_latitude, _longitude,
