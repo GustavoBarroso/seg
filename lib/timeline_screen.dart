@@ -39,7 +39,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Future<void> _obterLocalizacaoAtual() async {
     try {
       Position position = await _locationService.getLocalizacaoAtual();
-
       setState(() {
         _latitude = position.latitude ?? 0.0;
         _longitude = position.longitude ?? 0.0;
@@ -72,19 +71,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 .map(
                     (doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
                 .toList();
-
             reports.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-
             return RefreshIndicator(
               onRefresh: refresh,
               child: ListView.builder(
                 itemCount: reports.length,
                 itemBuilder: (context, index) {
                   Report model = reports[index];
-
                   String timeAgo =
-                  timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
-
+                      timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
                   return Container(
                     margin: EdgeInsets.all(8),
                     child: Card(
@@ -166,14 +161,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   itemCount: 5,
                                   itemSize: 34,
                                   itemPadding:
-                                  EdgeInsets.symmetric(horizontal: 2.0),
-                                  itemBuilder: (context, _) =>
-                                      Icon(
-                                        Icons.star,
-                                        color: corPrincipal,
-                                      ),
+                                      EdgeInsets.symmetric(horizontal: 2.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: corPrincipal,
+                                  ),
                                   onRatingUpdate: (rating) {
-                                    storeRating(rating, model.useruid); // logica pra jogar a nota no firestore
+                                    storeRating(
+                                        rating,
+                                        model
+                                            .useruid); // logica pra jogar a nota no firestore
                                   },
                                 ),
                               ],
@@ -204,22 +201,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   Future<void> refresh() async {
     List<Report> temp = [];
-
     QuerySnapshot<Map<String, dynamic>> snapshot =
-    await _firebaseFirestore.collection("report").get();
-
+        await _firebaseFirestore.collection("report").get();
     for (var doc in snapshot.docs) {
       Report report = Report.fromMap(doc.data() as Map<String, dynamic>);
-
       double distance = calculateDistance(_latitude, _longitude,
           report.latitude ?? 0.0, report.longitude ?? 0.0);
-
       temp.add(report.copyWith(distance: distance));
     }
-
     // Ordena a lista de reports com base na distância
     temp.sort((a, b) => a.distance.compareTo(b.distance));
-
     setState(() {
       listReport = temp;
     });
@@ -228,20 +219,15 @@ class _TimelineScreenState extends State<TimelineScreen> {
 // Haversine (calcular distancia entre 2 pontos)
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     const R = 6371.0; // Raio da Terra em quilômetros
-
     final dLat = _toRadians(lat2 - lat1);
     final dLon = _toRadians(lon2 - lon1);
-
     final a = sin(dLat / 2) * sin(dLat / 2) +
         cos(_toRadians(lat1)) *
             cos(_toRadians(lat2)) *
             sin(dLon / 2) *
             sin(dLon / 2);
-
     final c = 2 * atan2(sqrt(a), sqrt(1 - a));
-
     final distance = R * c;
-
     return distance;
   }
 
@@ -252,10 +238,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
   void storeRating(double rating, String? useruid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference ratings = firestore.collection('avaliacoes');
-
     ratings.add({
       'nota': rating,
       'data': DateTime.now(),
+      'user': useruid,
       'useruid': useruid,
     });
   }
