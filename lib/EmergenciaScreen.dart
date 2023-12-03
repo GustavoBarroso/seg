@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class BotaoEmergencia extends StatelessWidget {
   final IconData iconData;
@@ -37,7 +38,13 @@ class BotaoEmergencia extends StatelessWidget {
     if (await canLaunch(url)) {
       await launch(url);
     } else {
-      print('Não foi possível abrir o discador com o número $phoneNumber');
+      // Se não for possível abrir o discador, tentar fazer a chamada diretamente
+      bool result = (await FlutterPhoneDirectCaller.callNumber(phoneNumber)) ?? false;
+      if (result) {
+        print('Chamada realizada para $phoneNumber com sucesso');
+      } else {
+        print('Não foi possível realizar a ligação para $phoneNumber');
+      }
     }
   }
 }
