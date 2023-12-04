@@ -36,7 +36,6 @@ class _AddReportState extends State<AddReport> {
   String? urlPhoto;
   String? _incidenteSelecionado;
 
-
   List<String> incidentes = [
     'Alagamento',
     'Engarrafamento',
@@ -62,7 +61,7 @@ class _AddReportState extends State<AddReport> {
 
       setState(() {
         localizacaoController.text =
-            'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
+        'Latitude: ${position.latitude}, Longitude: ${position.longitude}';
         _latitude = position.latitude;
         _longitude = position.longitude;
       });
@@ -207,23 +206,23 @@ class _AddReportState extends State<AddReport> {
                 width: 450, // Defina a largura máxima que você deseja
                 child: _imageFile != null
                     ? Image.file(
-                        _imageFile!,
-                        fit: BoxFit.cover,
-                      )
+                  _imageFile!,
+                  fit: BoxFit.cover,
+                )
                     : urlPhoto != null
-                        ? ClipRect(
-                            child: Align(
-                              alignment: Alignment.center,
-                              widthFactor: 1.0,
-                              heightFactor: 1.0,
-                              child: Image.network(
-                                urlPhoto!,
-                                fit: BoxFit
-                                    .cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
-                              ),
-                            ),
-                          )
-                        : Container(),
+                    ? ClipRect(
+                  child: Align(
+                    alignment: Alignment.center,
+                    widthFactor: 1.0,
+                    heightFactor: 1.0,
+                    child: Image.network(
+                      urlPhoto!,
+                      fit: BoxFit
+                          .cover, // Isso faz com que a imagem cubra completamente o espaço alocado, mantendo a proporção
+                    ),
+                  ),
+                )
+                    : Container(),
               ),
             ],
           ),
@@ -249,7 +248,7 @@ class _AddReportState extends State<AddReport> {
               if (_imageFile != null) {
                 try {
                   String urlDownload = await StorageService().uploadReport(
-                    File: _imageFile!,
+                    file: _imageFile!,
                     fileName: DateTime.now().toString(),
                   );
                   setState(() {
@@ -262,7 +261,7 @@ class _AddReportState extends State<AddReport> {
               }
 
               String? username =
-                  _reportAnonimo ? "Report Anônimo" : user!.displayName;
+              _reportAnonimo ? "Report Anônimo" : user!.displayName;
               String? useruid = user!.uid;
 
               Report report = Report(
@@ -276,7 +275,9 @@ class _AddReportState extends State<AddReport> {
                   longitude: _longitude,
                   distance: 0.0,
                   urlPhoto: urlPhoto,
-                  timestamp: Timestamp.now());
+                  timestamp: Timestamp.now(),
+                  avaliacoes: await FirestoreService().getAvaliacoesDoUsuario(useruid),
+                );
 
               _firebaseFirestore
                   .collection("report")

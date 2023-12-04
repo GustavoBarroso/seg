@@ -1,4 +1,3 @@
-import 'dart:core';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:seg/services/storage_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'component/show_snackbar.dart';
 import 'services/average_service.dart';
+import 'package:seg/component/report.dart';
 
 String? urlPhoto;
 
@@ -47,13 +47,14 @@ class _StorageScreenState extends State<StorageScreen> {
           children: [
             (urlPhoto != null)
                 ? ClipRRect(
-                borderRadius: BorderRadius.circular(128),
-                child: Image.network(
-                  urlPhoto!,
-                  height: 256,
-                  width: 256,
-                  fit: BoxFit.cover,
-                ))
+              borderRadius: BorderRadius.circular(128),
+              child: Image.network(
+                urlPhoto!,
+                height: 256,
+                width: 256,
+                fit: BoxFit.cover,
+              ),
+            )
                 : const CircleAvatar(
               radius: 128,
               child: Icon(Icons.person),
@@ -117,8 +118,7 @@ class _StorageScreenState extends State<StorageScreen> {
         imageQuality: 50)
         .then((XFile? image) {
       if (image != null) {
-        StorageService()
-            .upload(File: File(image.path), fileName: DateTime.now().toString())
+        widget.storageService.upload(file: File(image!.path), fileName: DateTime.now().toString())
             .then((String urlDownload) {
           setState(() {
             urlPhoto = urlDownload;
@@ -138,6 +138,8 @@ class _StorageScreenState extends State<StorageScreen> {
   }
 
   Future<double> calcularMedia(User user) async {
-    return widget.averageService.calculateAverage(user);
+    List<Avaliacao> avaliacoes = await widget.storageService.getAvaliacoesDoUsuario(user);
+
+    return widget.averageService.calculateAverage(avaliacoes);
   }
 }
