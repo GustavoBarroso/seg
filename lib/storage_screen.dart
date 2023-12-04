@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:seg/services/storage_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'component/show_snackbar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'services/average_service.dart';  // Importando o serviço de média
+import 'services/average_service.dart';
 
 String? urlPhoto;
 
@@ -16,7 +15,7 @@ class StorageScreen extends StatefulWidget {
   final User user;
 
   final StorageService storageService = StorageService();
-  final AverageService averageService = AverageService();  // Instanciando o serviço de média
+  final AverageService averageService = AverageService();
 
   @override
   State<StorageScreen> createState() => _StorageScreenState();
