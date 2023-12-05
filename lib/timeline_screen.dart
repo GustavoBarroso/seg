@@ -10,6 +10,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'services/LocationService.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
+import 'package:seg/services/average_service.dart';
 
 class TimelineScreen extends StatefulWidget {
   final User user;
@@ -78,6 +79,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 itemCount: reports.length,
                 itemBuilder: (context, index) {
                   Report model = reports[index];
+                  String userUid = model.useruid!;
                   String timeAgo =
                   timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
                   return Container(
@@ -92,13 +94,42 @@ class _TimelineScreenState extends State<TimelineScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           ListTile(
-                            title: Text(
-                              model.username,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: corPrincipal,
-                              ),
+                            title: Row(
+                              children: [
+                                Text(
+                                  model.username,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: corPrincipal,
+                                  ),
+                                ),
+                                SizedBox(width: 8), // Espaço entre o nome de usuário e a estrela
+                                Icon(
+                                  Icons.star,
+                                  color: corPrincipal,
+                                ),
+                                SizedBox(width: 8), // Espaço entre a estrela e o texto
+                                FutureBuilder<double>(
+                                  future: AverageService().calculateAverageTimeLine(userUid),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return CircularProgressIndicator();
+                                    } else if (snapshot.hasError) {
+                                      return Text('Erro: ${snapshot.error}');
+                                    } else {
+                                      double average = snapshot.data ?? 0.0;
+                                      return Text(
+                                        '$average', // Ou qualquer outra lógica para exibir a média
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: corPrincipal,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                             subtitle: Padding(
                               padding: EdgeInsets.symmetric(vertical: 8),
@@ -242,7 +273,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
       'nota': rating,
       'data': DateTime.now(),
       'user': useruid,
-      'useruid': useruid,
     });
   }
 }

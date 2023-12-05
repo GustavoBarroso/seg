@@ -11,7 +11,7 @@ class Report {
   late double longitude;
   late double distance;
   late Timestamp timestamp;
-  late String? useruid;
+  late String useruid;
 
   Report({
     required this.id,

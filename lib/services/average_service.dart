@@ -24,4 +24,25 @@ class AverageService {
       return 5.0;
     }
   }
+
+  Future<double> calculateAverageTimeLine(String userUid) async {
+    CollectionReference ratings = _firestore.collection('avaliacoes');
+
+    QuerySnapshot querySnapshot =
+    await ratings.where('useruid', isEqualTo: userUid).get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      double sumOfRatings = 0;
+      int numberOfDocuments = querySnapshot.docs.length;
+
+      for (QueryDocumentSnapshot document in querySnapshot.docs) {
+        sumOfRatings += document['nota'];
+      }
+
+      double average = sumOfRatings / numberOfDocuments;
+      return double.parse(average.toStringAsFixed(1));
+    } else {
+      return 5.0;
+    }
+  }
 }
