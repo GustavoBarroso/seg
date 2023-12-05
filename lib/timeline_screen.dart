@@ -109,7 +109,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   Icons.star,
                                   color: corPrincipal,
                                 ),
-                                SizedBox(width: 8), // Espaço entre a estrela e o texto
+                                SizedBox(width: 8),
                                 FutureBuilder<double>(
                                   future: AverageService().calculateAverageTimeLine(userUid),
                                   builder: (context, snapshot) {
@@ -120,10 +120,10 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     } else {
                                       double average = snapshot.data ?? 0.0;
                                       return Text(
-                                        '$average', // Ou qualquer outra lógica para exibir a média
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: corPrincipal,
+                                        '$average',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
                                         ),
                                       );
                                     }
