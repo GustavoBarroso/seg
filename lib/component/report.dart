@@ -12,7 +12,6 @@ class Report {
   late double distance;
   late Timestamp timestamp;
   late String? useruid;
-  List<Avaliacao>? avaliacoes;
 
   Report({
     required this.id,
@@ -26,7 +25,6 @@ class Report {
     required this.distance,
     required this.timestamp,
     required this.useruid,
-    this.avaliacoes,
   });
 
   Report.fromMap(Map<String, dynamic> map)
@@ -40,10 +38,7 @@ class Report {
         latitude = (map["latitude"] as num?)?.toDouble() ?? 0.0,
         longitude = (map["longitude"] as num?)?.toDouble() ?? 0.0,
         distance = (map["distance"] as num?)?.toDouble() ?? 0.0,
-        timestamp = map["timestamp"] ?? Timestamp.now(),
-        avaliacoes = (map['avaliacoes'] as List<dynamic>?)
-            ?.map((avaliacaoMap) => Avaliacao.fromMap(avaliacaoMap))
-            .toList();
+        timestamp = map["timestamp"] ?? Timestamp.now();
 
   Map<String, dynamic> toMap() {
     return {
@@ -58,7 +53,6 @@ class Report {
       "longitude": longitude,
       "distance": distance,
       "timestamp": timestamp,
-      "avaliacoes": avaliacoes?.map((avaliacao) => avaliacao.toMap()).toList(),
     };
   }
 
@@ -74,7 +68,6 @@ class Report {
     double? longitude,
     double? distance,
     Timestamp? timestamp,
-    List<Avaliacao>? avaliacoes,
   }) {
     return Report(
       id: id ?? this.id,
@@ -88,7 +81,6 @@ class Report {
       longitude: longitude ?? this.longitude,
       distance: distance ?? this.distance,
       timestamp: timestamp ?? this.timestamp,
-      avaliacoes: avaliacoes ?? this.avaliacoes,
     );
   }
 
@@ -96,55 +88,5 @@ class Report {
     List<String> partes =
     localizacao.split(',').map((e) => e.trim()).take(4).toList();
     return partes.join(', ');
-  }
-}
-
-class Avaliacao {
-  late double nota;
-  String useruid;
-  String? reportId;
-
-  Avaliacao({
-    required this.nota,
-    required this.useruid,
-    this.reportId, // Torna reportId opcional
-  });
-
-  Avaliacao.fromMap(Map<String, dynamic> map)
-      : nota = map["nota"].toDouble(),
-        useruid = map["useruid"],
-        reportId = map["reportId"];
-
-  Map<String, dynamic> toMap() {
-    return {
-      "nota": nota,
-      "useruid": useruid,
-      "reportId": reportId,
-    };
-  }
-}
-
-
-class FirestoreService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  Future<List<Avaliacao>> getAvaliacoesDoUsuario(String useruid) async {
-    try {
-      QuerySnapshot<Map<String, dynamic>> avaliacoesSnapshot =
-      await _firestore.collection('avaliacoes').where('useruid', isEqualTo: useruid).get();
-
-      if (avaliacoesSnapshot.size > 0) {
-        List<Avaliacao> avaliacoes = avaliacoesSnapshot.docs
-            .map((avaliacaoDoc) => Avaliacao.fromMap(avaliacaoDoc.data()))
-            .toList();
-
-        return avaliacoes;
-      } else {
-        return [];
-      }
-    } catch (error) {
-      print('Erro ao obter avaliações do usuário: $error');
-      return [];
-    }
   }
 }

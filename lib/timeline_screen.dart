@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'component/report.dart';
 import 'report_screen.dart';
@@ -8,6 +9,7 @@ import 'drawer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'services/LocationService.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:math';
 
 class TimelineScreen extends StatefulWidget {
   final User user;
@@ -30,8 +32,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
   @override
   void initState() {
     super.initState();
+    refresh();
     _obterLocalizacaoAtual();
-    refresh(useruid: widget.user.uid);
   }
 
   Future<void> _obterLocalizacaoAtual() async {
@@ -41,7 +43,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
         _latitude = position.latitude ?? 0.0;
         _longitude = position.longitude ?? 0.0;
       });
-      await refresh(useruid: widget.user.uid);
+      await refresh();
     } catch (e) {
       print('Erro ao obter a localização: $e');
     }
@@ -67,34 +69,117 @@ class _TimelineScreenState extends State<TimelineScreen> {
           } else {
             List<Report> reports = snapshot.data!.docs
                 .map(
-                  (doc) => Report.fromMap(doc.data() as Map<String, dynamic>),
-            )
+                    (doc) => Report.fromMap(doc.data() as Map<String, dynamic>))
                 .toList();
             reports.sort((a, b) => b.timestamp.compareTo(a.timestamp));
             return RefreshIndicator(
-              onRefresh: () async {
-                await refresh(useruid: widget.user.uid);
-              },
+              onRefresh: refresh,
               child: ListView.builder(
                 itemCount: reports.length,
                 itemBuilder: (context, index) {
                   Report model = reports[index];
-                  String timeAgo = timeago.format(
-                    model.timestamp.toDate(),
-                    locale: 'pt_BR',
+                  String timeAgo =
+                  timeago.format(model.timestamp.toDate(), locale: 'pt_BR');
+                  return Container(
+                    margin: EdgeInsets.all(8),
+                    child: Card(
+                      elevation: 4,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        side: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ListTile(
+                            title: Text(
+                              model.username,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: corPrincipal,
+                              ),
+                            ),
+                            subtitle: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    timeAgo,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Incidente: ${model.incidente}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: corIncidente,
+                                    ),
+                                  ),
+                                  Text(
+                                    //Descrição
+                                    '${model.descricao}',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          if (model.urlPhoto != null &&
+                              model.urlPhoto!.isNotEmpty)
+                            Image.network(
+                              model.urlPhoto!,
+                              fit: BoxFit.cover,
+                            ),
+                          SizedBox(height: 8),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  //Localização
+                                  '${model.formatarLocalizacaoSimplificada()}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                RatingBar.builder(
+                                  initialRating: 0,
+                                  minRating: 0,
+                                  direction: Axis.horizontal,
+                                  allowHalfRating: false,
+                                  itemCount: 5,
+                                  itemSize: 34,
+                                  itemPadding:
+                                  EdgeInsets.symmetric(horizontal: 2.0),
+                                  itemBuilder: (context, _) => Icon(
+                                    Icons.star,
+                                    color: corPrincipal,
+                                  ),
+                                  onRatingUpdate: (rating) {
+                                    storeRating(
+                                        rating,
+                                        model
+                                            .useruid); // logica pra jogar a nota no firestore
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   );
-
-                  Avaliacao? avaliacaoUsuario = model.avaliacoes?.firstWhere(
-                        (avaliacao) => avaliacao.useruid == widget.user.uid,
-                    orElse: () => Avaliacao(nota: 0.0, useruid: ""),
-                  );
-
-                  if (avaliacaoUsuario != null &&
-                      avaliacaoUsuario.reportId == model.id) {
-                    return buildReportCardWithRating(model, timeAgo, avaliacaoUsuario);
-                  } else {
-                    return buildReportCardWithoutRating(model, timeAgo);
-                  }
                 },
               ),
             );
@@ -114,220 +199,50 @@ class _TimelineScreenState extends State<TimelineScreen> {
     );
   }
 
-  Widget buildReportCardWithRating(
-      Report model, String timeAgo, Avaliacao avaliacaoUsuario) {
-    return Container(
-      margin: EdgeInsets.all(8),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey[300]!),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ListTile(
-              title: Text(
-                model.username ?? "",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: corPrincipal,
-                ),
-              ),
-              subtitle: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      timeAgo,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Incidente: ${model.incidente ?? ""}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: corIncidente,
-                      ),
-                    ),
-                    Text(
-                      '${model.descricao ?? ""}',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (model.urlPhoto != null && model.urlPhoto!.isNotEmpty)
-              Image.network(
-                model.urlPhoto!,
-                fit: BoxFit.cover,
-              ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${model.formatarLocalizacaoSimplificada()}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-                  RatingBar.builder(
-                    initialRating: avaliacaoUsuario.nota,
-                    minRating: 0,
-                    direction: Axis.horizontal,
-                    allowHalfRating: false,
-                    itemCount: 5,
-                    itemSize: 34,
-                    itemPadding: EdgeInsets.symmetric(horizontal: 2.0),
-                    itemBuilder: (context, _) => Icon(
-                      Icons.star,
-                      color: corPrincipal,
-                    ),
-                    onRatingUpdate: (rating) {
-                      storeRating(
-                        rating,
-                        model.useruid,
-                        reportId: model.id,
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Text(
-              'Sua Avaliação: ${avaliacaoUsuario.nota}',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: corPrincipal,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildReportCardWithoutRating(Report model, String timeAgo) {
-    return Container(
-      margin: EdgeInsets.all(8),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: BorderSide(color: Colors.grey[300]!),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            ListTile(
-              title: Text(
-                model.username ?? "",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: corPrincipal,
-                ),
-              ),
-              subtitle: Padding(
-                padding: EdgeInsets.symmetric(vertical: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      timeAgo,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'Incidente: ${model.incidente ?? ""}',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: corIncidente,
-                      ),
-                    ),
-                    Text(
-                      '${model.descricao ?? ""}',
-                      style: TextStyle(
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            if (model.urlPhoto != null && model.urlPhoto!.isNotEmpty)
-              Image.network(
-                model.urlPhoto!,
-                fit: BoxFit.cover,
-              ),
-            SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${model.formatarLocalizacaoSimplificada()}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Future<void> refresh({required String useruid}) async {
+  Future<void> refresh() async {
     List<Report> temp = [];
     QuerySnapshot<Map<String, dynamic>> snapshot =
     await _firebaseFirestore.collection("report").get();
-
     for (var doc in snapshot.docs) {
       Report report = Report.fromMap(doc.data() as Map<String, dynamic>);
-
-      List<Avaliacao> avaliacoes = await FirestoreService()
-          .getAvaliacoesDoUsuario(report.id ?? "");
-      temp.add(report.copyWith(avaliacoes: avaliacoes));
+      double distance = calculateDistance(_latitude, _longitude,
+          report.latitude ?? 0.0, report.longitude ?? 0.0);
+      temp.add(report.copyWith(distance: distance));
     }
-
+    // Ordena a lista de reports com base na distância
+    temp.sort((a, b) => a.distance.compareTo(b.distance));
     setState(() {
       listReport = temp;
     });
   }
 
-  void storeRating(double rating, String? useruid, {required String reportId}) {
+// Haversine (calcular distancia entre 2 pontos)
+  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+    const R = 6371.0; // Raio da Terra em quilômetros
+    final dLat = _toRadians(lat2 - lat1);
+    final dLon = _toRadians(lon2 - lon1);
+    final a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            sin(dLon / 2) *
+            sin(dLon / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    final distance = R * c;
+    return distance;
+  }
+
+  double _toRadians(double degree) {
+    return degree * (pi / 180.0);
+  }
+
+  void storeRating(double rating, String? useruid) {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
     CollectionReference ratings = firestore.collection('avaliacoes');
     ratings.add({
       'nota': rating,
       'data': DateTime.now(),
+      'user': useruid,
       'useruid': useruid,
-      'reportId': reportId,
     });
   }
 }
