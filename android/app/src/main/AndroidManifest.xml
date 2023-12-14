@@ -8,7 +8,7 @@
 
     <application
 
-        android:label="seg"
+        android:label="SEG"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
